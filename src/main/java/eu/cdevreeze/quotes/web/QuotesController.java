@@ -45,7 +45,7 @@ public class QuotesController {
 
     // The prettified JSON strings returned below increase the payload size, but that's accepted here
 
-    @GetMapping(value = "/randomQuote", produces = "application/json")
+    @GetMapping(value = "/randomQuote.json", produces = "application/json")
     public String randomQuote() {
         var allQuotes = quoteService.findAllQuotes();
         var random = new Random();
@@ -63,7 +63,7 @@ public class QuotesController {
         return replaceWindowsNewline(sw.toString());
     }
 
-    @GetMapping(value = "/quotes", produces = "application/json")
+    @GetMapping(value = "/quotes.json", produces = "application/json")
     public String quotes() {
         var allQuotes = quoteService.findAllQuotes();
 

@@ -39,7 +39,7 @@ public class QuotesAdminController {
         this.quoteService = quoteService;
     }
 
-    @PostMapping("/loadSampleQuotes")
+    @PostMapping("/admin/loadSampleQuotes")
     public void loadSampleQuotes() {
         if (quoteService.findAllQuotes().isEmpty()) {
             logger.info(String.format("Loading %d sample quotes into the database", SampleData.allQuotes.size()));
