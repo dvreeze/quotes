@@ -17,11 +17,15 @@
 package eu.cdevreeze.quotes.repository.jdbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -30,29 +34,30 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.OptionalLong;
 
 /**
- * (Spring) JDBC-based QuoteRepository implementation that uses JSON columns.
+ * (Spring) JDBC-based QuoteRepository implementation that uses (almost) only JSON in the query result sets.
  *
  * @author Chris de Vreeze
  */
 @Repository
-public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
+@Primary
+public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
 
     private final JdbcClient jdbcClient;
 
-    public JdbcQuoteRepositoryUsingJson(DataSource dataSource) {
+    public JdbcQuoteRepositoryUsingOnlyJson(DataSource dataSource) {
         this.jdbcClient = JdbcClient.create(dataSource);
     }
 
     @Override
     public ImmutableList<Quote> findAllQuotes() {
         String sql = """
-                select qt.id, qt.text, qt.attributedTo, json_arrayagg(subj.subject) as subjects
+                select qt.id,
+                       json_object('text', qt.text, 'attributedTo', qt.attributedTo, 'subjects', json_arrayagg(subj.subject))
+                           as quote
                   from quote qt
                   left join quote_subject subj on qt.id = subj.quote_id
                  group by qt.id""";
@@ -79,25 +84,20 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
     // Nice reuse across select queries
     // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
     private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
+        var objectMapper = getObjectMapper();
         return stmt
-                .query(this::mapRow)
+                .query((ResultSet rs, int rowNum) -> mapRow(rs, objectMapper))
                 .list()
                 .stream()
                 .collect(ImmutableList.toImmutableList());
     }
 
-    private Quote mapRow(ResultSet rs, int rowNum) {
+    private Quote mapRow(ResultSet rs, ObjectMapper objectMapper) {
         try {
-            var subjectsJsonString = Optional.ofNullable(rs.getString("subjects")).orElse("[]");
-            var subjectArray = new ObjectMapper().readValue(subjectsJsonString, String[].class);
-            var subjects = Arrays.stream(subjectArray).collect(ImmutableList.toImmutableList());
-
-            return new Quote(
-                    OptionalLong.of(rs.getLong("id")),
-                    rs.getString("text"),
-                    rs.getString("attributedTo"),
-                    subjects
-            );
+            var quoteId = OptionalLong.of(rs.getLong("id"));
+            var jsonString = rs.getString("quote");
+            var quoteData = objectMapper.readValue(jsonString, QuoteData.class);
+            return new Quote(quoteId, quoteData.text(), quoteData.attributedTo(), quoteData.subjects());
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -122,5 +122,9 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
                 .param("quote_id", quote.idOption().orElseThrow())
                 .param("subject", subject)
                 .update());
+    }
+
+    private ObjectMapper getObjectMapper() {
+        return JsonMapper.builder().addModule(new Jdk8Module()).addModule(new GuavaModule()).build();
     }
 }

@@ -16,15 +16,18 @@
 
 package eu.cdevreeze.quotes.web;
 
-import eu.cdevreeze.quotes.model.Quote;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import eu.cdevreeze.quotes.service.QuoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Random;
 
 /**
@@ -41,28 +44,46 @@ public class QuotesController {
         this.quoteService = quoteService;
     }
 
+    // The prettified JSON strings returned below increase the payload size, but that's accepted here
+
     @GetMapping(value = "/randomQuote", produces = "application/json")
-    public Map<String, Object> randomQuote() {
+    public String randomQuote() {
         var allQuotes = quoteService.findAllQuotes();
         var random = new Random();
         var randomIdx = random.nextInt(allQuotes.size());
         var randomQuote = allQuotes.get(randomIdx);
 
-        return convertQuote(randomQuote);
+        var sw = new StringWriter();
+        try {
+            getObjectMapper().writeValue(sw, randomQuote);
+            sw.write("\n");
+            sw.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return sw.toString();
     }
 
     @GetMapping(value = "/quotes", produces = "application/json")
-    public List<Map<String, Object>> quotes() {
+    public String quotes() {
         var allQuotes = quoteService.findAllQuotes();
-        return allQuotes.stream().map(this::convertQuote).toList();
+
+        var sw = new StringWriter();
+        try {
+            getObjectMapper().writeValue(sw, allQuotes);
+            sw.write("\n");
+            sw.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return sw.toString();
     }
 
-    private Map<String, Object> convertQuote(Quote quote) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", quote.idOption().orElse(0));
-        result.put("text", quote.text());
-        result.put("attributedTo", quote.attributedTo());
-        result.put("subjects", quote.subjects());
-        return result;
+    private ObjectMapper getObjectMapper() {
+        return JsonMapper.builder()
+                .addModule(new Jdk8Module())
+                .addModule(new GuavaModule())
+                .build()
+                .enable(SerializationFeature.INDENT_OUTPUT);
     }
 }
