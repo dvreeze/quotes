@@ -18,6 +18,8 @@ package eu.cdevreeze.quotes.web;
 
 import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.service.QuoteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class QuotesAdminController {
 
+    private final Logger logger = LoggerFactory.getLogger(QuotesAdminController.class);
+
     private final QuoteService quoteService;
 
     public QuotesAdminController(QuoteService quoteService) {
@@ -37,6 +41,11 @@ public class QuotesAdminController {
 
     @PostMapping("/loadSampleQuotes")
     public void loadSampleQuotes() {
-        SampleData.allQuotes.forEach(quoteService::addQuote);
+        if (quoteService.findAllQuotes().isEmpty()) {
+            logger.info(String.format("Loading %d sample quotes into the database", SampleData.allQuotes.size()));
+            SampleData.allQuotes.forEach(quoteService::addQuote);
+        } else {
+            logger.warn("Not loading any sample quotes into the database, because it is already non-empty");
+        }
     }
 }
