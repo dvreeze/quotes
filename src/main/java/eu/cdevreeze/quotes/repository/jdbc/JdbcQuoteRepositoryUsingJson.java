@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 
 /**
  * (Spring) JDBC-based QuoteRepository implementation that uses JSON columns.
@@ -71,7 +70,7 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
     public Quote addQuote(QuoteData quote) {
         var quoteId = addQuoteWithoutSubjects(quote);
         var quoteWithId =
-                new Quote(OptionalLong.of(quoteId), quote.text(), quote.attributedTo(), quote.subjects());
+                new Quote(quoteId, quote.text(), quote.attributedTo(), quote.subjects());
         addQuoteSubjects(quoteWithId);
         return quoteWithId;
     }
@@ -93,7 +92,7 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
             var subjects = Arrays.stream(subjectArray).collect(ImmutableList.toImmutableList());
 
             return new Quote(
-                    OptionalLong.of(rs.getLong("id")),
+                    rs.getLong("id"),
                     rs.getString("text"),
                     rs.getString("attributedTo"),
                     subjects
@@ -119,7 +118,7 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
     private void addQuoteSubjects(Quote quote) {
         String sql = "insert into quote_subject (quote_id, subject) values (:quote_id, :subject)";
         quote.subjects().forEach(subject -> jdbcClient.sql(sql)
-                .param("quote_id", quote.idOption().orElseThrow())
+                .param("quote_id", quote.id())
                 .param("subject", subject)
                 .update());
     }

@@ -22,7 +22,6 @@ import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 
 import java.util.Comparator;
-import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -54,9 +53,9 @@ public class InMemoryQuoteRepository implements QuoteRepository {
     @Override
     public Quote addQuote(QuoteData quote) {
         var updatedDbContent = quoteDatabase.updateAndGet(db -> {
-                    var nextId = db.stream().flatMap(qt -> qt.idOption().stream().boxed())
+                    var nextId = db.stream().map(Quote::id)
                             .max(Comparator.naturalOrder()).orElse(1L);
-                    var newQuote = new Quote(OptionalLong.of(nextId), quote.text(), quote.attributedTo(), quote.subjects());
+                    var newQuote = new Quote(nextId, quote.text(), quote.attributedTo(), quote.subjects());
                     return ImmutableList.<Quote>builder().addAll(db).add(newQuote).build();
                 }
         );

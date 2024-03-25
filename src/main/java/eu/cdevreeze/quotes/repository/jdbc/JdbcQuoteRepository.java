@@ -30,7 +30,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.stream.Collectors;
 
 /**
@@ -66,7 +65,7 @@ public class JdbcQuoteRepository implements QuoteRepository {
     public Quote addQuote(QuoteData quote) {
         var quoteId = addQuoteWithoutSubjects(quote);
         var quoteWithId =
-                new Quote(OptionalLong.of(quoteId), quote.text(), quote.attributedTo(), quote.subjects());
+                new Quote(quoteId, quote.text(), quote.attributedTo(), quote.subjects());
         addQuoteSubjects(quoteWithId);
         return quoteWithId;
     }
@@ -84,7 +83,7 @@ public class JdbcQuoteRepository implements QuoteRepository {
                 .map(grp -> {
                             var first = grp.getFirst();
                             return new Quote(
-                                    OptionalLong.of(first.id()),
+                                    first.id(),
                                     first.text(),
                                     first.attributedTo(),
                                     grp.stream().flatMap(row -> row.subjectOption().stream()).collect(ImmutableList.toImmutableList())
@@ -123,7 +122,7 @@ public class JdbcQuoteRepository implements QuoteRepository {
     private void addQuoteSubjects(Quote quote) {
         String sql = "insert into quote_subject (quote_id, subject) values (:quote_id, :subject)";
         quote.subjects().forEach(subject -> jdbcClient.sql(sql)
-                .param("quote_id", quote.idOption().orElseThrow())
+                .param("quote_id", quote.id())
                 .param("subject", subject)
                 .update());
     }

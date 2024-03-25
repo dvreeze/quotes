@@ -35,10 +35,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.OptionalLong;
 
 /**
- * (Spring) JDBC-based QuoteRepository implementation that uses (almost) only JSON in the query result sets.
+ * (Spring) JDBC-based QuoteRepository implementation that uses only JSON in the query result sets.
  *
  * @author Chris de Vreeze
  */
@@ -55,9 +54,11 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     @Override
     public ImmutableList<Quote> findAllQuotes() {
         String sql = """
-                select qt.id,
-                       json_object('text', qt.text, 'attributedTo', qt.attributedTo, 'subjects', json_arrayagg(subj.subject))
-                           as quote
+                select json_object(
+                           'id', qt.id,
+                           'text', qt.text,
+                           'attributedTo', qt.attributedTo,
+                           'subjects', json_arrayagg(subj.subject)) as quote
                   from quote qt
                   left join quote_subject subj on qt.id = subj.quote_id
                  group by qt.id""";
@@ -76,7 +77,7 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     public Quote addQuote(QuoteData quote) {
         var quoteId = addQuoteWithoutSubjects(quote);
         var quoteWithId =
-                new Quote(OptionalLong.of(quoteId), quote.text(), quote.attributedTo(), quote.subjects());
+                new Quote(quoteId, quote.text(), quote.attributedTo(), quote.subjects());
         addQuoteSubjects(quoteWithId);
         return quoteWithId;
     }
@@ -94,10 +95,8 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
 
     private Quote mapRow(ResultSet rs, ObjectMapper objectMapper) {
         try {
-            var quoteId = OptionalLong.of(rs.getLong("id"));
             var jsonString = rs.getString("quote");
-            var quoteData = objectMapper.readValue(jsonString, QuoteData.class);
-            return new Quote(quoteId, quoteData.text(), quoteData.attributedTo(), quoteData.subjects());
+            return objectMapper.readValue(jsonString, Quote.class);
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +118,7 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     private void addQuoteSubjects(Quote quote) {
         String sql = "insert into quote_subject (quote_id, subject) values (:quote_id, :subject)";
         quote.subjects().forEach(subject -> jdbcClient.sql(sql)
-                .param("quote_id", quote.idOption().orElseThrow())
+                .param("quote_id", quote.id())
                 .param("subject", subject)
                 .update());
     }

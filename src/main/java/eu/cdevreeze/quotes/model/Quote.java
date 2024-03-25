@@ -19,7 +19,6 @@ package eu.cdevreeze.quotes.model;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Objects;
-import java.util.OptionalLong;
 
 /**
  * Quote model data class (or DTO). It is deeply immutable and thread-safe. Unlike classes with Lombok annotations,
@@ -28,13 +27,12 @@ import java.util.OptionalLong;
  * @author Chris de Vreeze
  */
 public record Quote(
-        OptionalLong idOption,
+        long id,
         String text,
         String attributedTo,
         ImmutableList<String> subjects
 ) {
     public Quote {
-        Objects.requireNonNull(idOption);
         Objects.requireNonNull(text);
         Objects.requireNonNull(attributedTo);
         Objects.requireNonNull(subjects);
