@@ -61,7 +61,7 @@ public class QuotesController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return sw.toString();
+        return replaceWindowsNewline(sw.toString());
     }
 
     @GetMapping(value = "/quotes", produces = "application/json")
@@ -76,7 +76,7 @@ public class QuotesController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return sw.toString();
+        return replaceWindowsNewline(sw.toString());
     }
 
     private ObjectMapper getObjectMapper() {
@@ -85,5 +85,9 @@ public class QuotesController {
                 .addModule(new GuavaModule())
                 .build()
                 .enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    private String replaceWindowsNewline(String s) {
+        return s.replace("\r\n", "\n");
     }
 }
