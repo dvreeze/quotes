@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -42,7 +41,6 @@ import java.util.Objects;
  * @author Chris de Vreeze
  */
 @Repository
-@Primary
 public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
 
     private final JdbcClient jdbcClient;

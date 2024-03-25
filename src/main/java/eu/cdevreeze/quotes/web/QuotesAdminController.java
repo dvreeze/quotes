@@ -18,7 +18,6 @@ package eu.cdevreeze.quotes.web;
 
 import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.service.QuoteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +31,7 @@ public class QuotesAdminController {
 
     private final QuoteService quoteService;
 
-    public QuotesAdminController(@Autowired QuoteService quoteService) {
+    public QuotesAdminController(QuoteService quoteService) {
         this.quoteService = quoteService;
     }
 

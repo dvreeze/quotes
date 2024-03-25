@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import eu.cdevreeze.quotes.service.QuoteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +39,7 @@ public class QuotesController {
 
     private final QuoteService quoteService;
 
-    public QuotesController(@Autowired QuoteService quoteService) {
+    public QuotesController(QuoteService quoteService) {
         this.quoteService = quoteService;
     }
 

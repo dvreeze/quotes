@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes;
+package eu.cdevreeze.quotes.props;
 
-import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Quotes application main program.
+ * Configuration property for the choice of (JDBC) QuoteRepository implementation.
+ * <p>
+ * See for example <a href="https://www.baeldung.com/configuration-properties-in-spring-boot">configuration properties in Spring Boot</a>.
  *
  * @author Chris de Vreeze
  */
-@SpringBootApplication
-@EnableConfigurationProperties(JdbcRepositoryChoiceProperties.class)
-public class QuotesApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(QuotesApplication.class, args);
-    }
-
+@ConfigurationProperties(prefix = "implementation")
+public record JdbcRepositoryChoiceProperties(String jdbcRepository) {
 }
