@@ -19,6 +19,11 @@ The project uses a familiar layering (web, transactional services, repositories)
 and separates interfaces from implementations for services and
 repositories.
 
+Documentation I consulted includes the links in
+[HELP.md](https://github.com/dvreeze/quotes/blob/master/HELP.md),
+as well as [getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started)
+and [using Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html).
+
 ### Running the code
 
 To run the web application, a MySQL database is needed.
@@ -26,7 +31,7 @@ I did not install MySQL, but used a MySQL Docker container instead.
 
 To see how, see for example [set up and configure MySQL in Docker](https://www.datacamp.com/tutorial/set-up-and-configure-mysql-in-docker).
 I followed the following steps:
-```agsl
+```shell
 docker pull mysql:8.2
 docker volume create quotes-db-data
 
@@ -44,12 +49,12 @@ not matter that much).
 
 To create the database tables, we would need to `run exec` into the MySQL
 container:
-```agsl
+```shell
 docker exec -it quotes-mysql /bin/sh
 ```
 
 Inside that container session, execute the following command(s):
-```agsl
+```shell
 mysql -u root -p
 # After being logged in to MySQL, create/use a new database "quotes"
 create database quotes;
