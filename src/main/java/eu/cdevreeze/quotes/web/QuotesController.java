@@ -16,12 +16,12 @@
 
 package eu.cdevreeze.quotes.web;
 
+import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.service.QuoteService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -47,7 +47,7 @@ public class QuotesController {
     }
 
     @GetMapping(value = "/quotes.json", produces = "application/json")
-    public List<Quote> quotes() {
+    public ImmutableList<Quote> quotes() {
         return quoteService.findAllQuotes();
     }
 }
