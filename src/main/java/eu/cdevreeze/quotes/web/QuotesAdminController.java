@@ -21,6 +21,7 @@ import eu.cdevreeze.quotes.service.QuoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Chris de Vreeze
  */
 @RestController
+@RequestMapping("/admin")
 public class QuotesAdminController {
 
     private final Logger logger = LoggerFactory.getLogger(QuotesAdminController.class);
@@ -39,7 +41,7 @@ public class QuotesAdminController {
         this.quoteService = quoteService;
     }
 
-    @PostMapping("/admin/loadSampleQuotes")
+    @PostMapping("/loadSampleQuotes")
     public void loadSampleQuotes() {
         if (quoteService.findAllQuotes().isEmpty()) {
             logger.info(String.format("Loading %d sample quotes into the database", SampleData.allQuotes.size()));
