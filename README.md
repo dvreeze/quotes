@@ -14,6 +14,15 @@ Overall the purpose of this small project is to learn,
 while not shying away from using own ideas. I also try to
 create "complete" classes instead of relying on Spring to
 auto-wire (final) fields without there being a corresponding constructor.
+I also do not use Lombok annotations for the same reason.
+I'd rather see complete Java classes and records than relying on
+code generation. Constructors should construct completely
+initialised objects, fields should be final for the most part,
+and the "state space" of classes should be as small as possible
+(also see Effective Java). The use of Spring (Boot) should
+not change that. Small concessions are needed, though.
+Classes are often not final (for repositories, transactional services),
+or else cglib code generation by Spring is not possible.
 
 The project uses a familiar layering (web, transactional services, repositories),
 and separates interfaces from implementations for services and
