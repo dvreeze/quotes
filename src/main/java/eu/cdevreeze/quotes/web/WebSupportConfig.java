@@ -23,6 +23,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 /**
@@ -38,7 +39,7 @@ public class WebSupportConfig {
      * This replacement is aware of Guava immutable collections, and it prettifies JSON output.
      */
     @Bean
-    public MappingJackson2HttpMessageConverter httpMessageConverter() {
+    public HttpMessageConverter<Object> httpMessageConverter() {
         return new MappingJackson2HttpMessageConverter(getObjectMapper());
     }
 

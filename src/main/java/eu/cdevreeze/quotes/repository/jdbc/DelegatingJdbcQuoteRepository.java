@@ -23,7 +23,6 @@ import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -34,7 +33,6 @@ import javax.sql.DataSource;
  * @author Chris de Vreeze
  */
 @Repository
-@Primary
 public class DelegatingJdbcQuoteRepository implements QuoteRepository {
 
     private final Logger logger = LoggerFactory.getLogger(DelegatingJdbcQuoteRepository.class);

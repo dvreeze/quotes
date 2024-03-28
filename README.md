@@ -56,7 +56,7 @@ variable for the MySQL password instead, using `docker run` option
 `--env-file` to point to it (although in a toy application it does
 not matter that much).
 
-To create the database tables, we would need to `run exec` into the MySQL
+To create the database tables, we would need to `docker exec` into the MySQL
 container:
 ```shell
 docker exec -it quotes-mysql /bin/sh

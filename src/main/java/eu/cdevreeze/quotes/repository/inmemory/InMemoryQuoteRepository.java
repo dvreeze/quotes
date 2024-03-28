@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * In-memory "implementation" of QuoteRepository, meant to be used in unit tests (of web controllers etc.).
  * It is extremely light-weight, and may make mocking of repositories unnecessary.
+ * <p>
+ * TODO Well-tested mini-library for these "in-memory databases", so that this repository hardly needs testing itself.
  *
  * @author Chris de Vreeze
  */

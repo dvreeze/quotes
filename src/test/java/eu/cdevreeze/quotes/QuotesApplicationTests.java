@@ -16,8 +16,15 @@
 
 package eu.cdevreeze.quotes;
 
+import eu.cdevreeze.quotes.repository.QuoteRepository;
+import eu.cdevreeze.quotes.service.QuoteService;
+import eu.cdevreeze.quotes.web.QuotesAdminController;
+import eu.cdevreeze.quotes.web.QuotesController;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Quotes application test.
@@ -27,8 +34,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class QuotesApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    private final QuotesController quotesController;
+    private final QuotesAdminController quotesAdminController;
+    private final QuoteService quoteService;
+    private final QuoteRepository quoteRepository;
+
+    @Autowired
+    public QuotesApplicationTests(
+            QuotesController quotesController,
+            QuotesAdminController quotesAdminController,
+            QuoteService quoteService,
+            QuoteRepository quoteRepository) {
+        this.quotesController = quotesController;
+        this.quotesAdminController = quotesAdminController;
+        this.quoteService = quoteService;
+        this.quoteRepository = quoteRepository;
+    }
+
+    @Test
+    void contextLoads() {
+        assertNotNull(quotesController);
+        assertNotNull(quotesAdminController);
+        assertNotNull(quoteService);
+        assertNotNull(quoteRepository);
+    }
 
 }

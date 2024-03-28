@@ -26,7 +26,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  *
  * @author Chris de Vreeze
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackageClasses = {
+        eu.cdevreeze.quotes.web.ScanMe.class,
+        eu.cdevreeze.quotes.appconfig.ScanMe.class
+})
 @EnableConfigurationProperties(JdbcRepositoryChoiceProperties.class)
 public class QuotesApplication {
 
