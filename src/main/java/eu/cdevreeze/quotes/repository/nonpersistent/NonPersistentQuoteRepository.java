@@ -17,50 +17,46 @@
 package eu.cdevreeze.quotes.repository.nonpersistent;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.quotes.internal.utils.MapBasedRepositories;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 
-import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * In-memory "implementation" of QuoteRepository, meant to be used in unit tests (of web controllers etc.).
  * It is extremely light-weight, and may make mocking of repositories unnecessary.
- * <p>
- * TODO Well-tested mini-library for these "in-memory databases", so that this repository hardly needs testing itself.
  *
  * @author Chris de Vreeze
  */
 public class NonPersistentQuoteRepository implements QuoteRepository {
 
-    private final AtomicReference<ImmutableList<Quote>> quoteDatabase;
+    private final AtomicReference<ImmutableMap<Long, Quote>> quoteDatabase;
 
-    public NonPersistentQuoteRepository(ImmutableList<Quote> initialQuoteDatabaseContent) {
+    public NonPersistentQuoteRepository(ImmutableMap<Long, Quote> initialQuoteDatabaseContent) {
         this.quoteDatabase = new AtomicReference<>(initialQuoteDatabaseContent);
     }
 
     @Override
     public ImmutableList<Quote> findAllQuotes() {
-        return quoteDatabase.get();
+        return quoteDatabase.get().values().stream().collect(ImmutableList.toImmutableList());
     }
 
     @Override
     public ImmutableList<Quote> findBySubject(String subject) {
-        return quoteDatabase.get().stream()
+        return findAllQuotes().stream()
                 .filter(qt -> qt.subjects().contains(subject))
                 .collect(ImmutableList.toImmutableList());
     }
 
     @Override
     public Quote addQuote(QuoteData quote) {
-        var updatedDbContent = quoteDatabase.updateAndGet(db -> {
-                    var nextId = db.stream().map(Quote::id)
-                            .max(Comparator.naturalOrder()).orElse(1L);
-                    var newQuote = new Quote(nextId, quote.text(), quote.attributedTo(), quote.subjects());
-                    return ImmutableList.<Quote>builder().addAll(db).add(newQuote).build();
-                }
+        var updatedDbContent = MapBasedRepositories.addRowToTableGeneratingKey(
+                id -> new Quote(id, quote.text(), quote.attributedTo(), quote.subjects()),
+                quoteDatabase
         );
-        return updatedDbContent.getLast();
+        return MapBasedRepositories.findLastRow(updatedDbContent).orElseThrow();
     }
 }

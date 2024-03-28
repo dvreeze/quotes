@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.quotes.appconfig;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.model.SampleData;
@@ -47,11 +47,11 @@ public class TestServiceConfig implements ServiceConfigApi {
         return new TransactionalQuoteService(quoteRepository());
     }
 
-    private ImmutableList<Quote> getAllQuotes() {
+    private ImmutableMap<Long, Quote> getAllQuotes() {
         long i = 1L;
-        ImmutableList.Builder<Quote> quotes = new ImmutableList.Builder<>();
+        ImmutableMap.Builder<Long, Quote> quotes = new ImmutableMap.Builder<>();
         for (QuoteData qt : SampleData.allQuotes) {
-            quotes.add(new Quote(i, qt.text(), qt.attributedTo(), qt.subjects()));
+            quotes.put(i, new Quote(i, qt.text(), qt.attributedTo(), qt.subjects()));
             i += 1;
         }
         return quotes.build();
