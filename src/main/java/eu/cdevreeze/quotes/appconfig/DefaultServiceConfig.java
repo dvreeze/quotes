@@ -16,44 +16,41 @@
 
 package eu.cdevreeze.quotes.appconfig;
 
-import com.google.common.collect.ImmutableList;
-import eu.cdevreeze.quotes.model.Quote;
-import eu.cdevreeze.quotes.model.QuoteData;
-import eu.cdevreeze.quotes.model.SampleData;
+import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
-import eu.cdevreeze.quotes.repository.nonpersistent.NonPersistentQuoteRepository;
+import eu.cdevreeze.quotes.repository.jdbc.DelegatingJdbcQuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
 import eu.cdevreeze.quotes.service.impl.TransactionalQuoteService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 /**
- * Test Spring Configuration for service and repository layer.
+ * Default Spring Configuration for service and repository layer.
  *
  * @author Chris de Vreeze
  */
 @Configuration
-@ConditionalOnProperty(value = "useInMemoryRepositories", havingValue = "true")
-public class TestServiceAppConfig implements ServiceAppConfigApi {
+@ConditionalOnProperty(value = "useInMemoryRepositories", havingValue = "false", matchIfMissing = true)
+public class DefaultServiceConfig implements ServiceConfigApi {
+
+    private final JdbcRepositoryChoiceProperties props;
+    private final DataSource dataSource;
+
+    public DefaultServiceConfig(JdbcRepositoryChoiceProperties props, DataSource dataSource) {
+        this.props = props;
+        this.dataSource = dataSource;
+    }
 
     @Bean
     public QuoteRepository quoteRepository() {
-        return new NonPersistentQuoteRepository(getAllQuotes());
+        return new DelegatingJdbcQuoteRepository(props, dataSource);
     }
 
     @Bean
     public QuoteService quoteService() {
         return new TransactionalQuoteService(quoteRepository());
-    }
-
-    private ImmutableList<Quote> getAllQuotes() {
-        long i = 1L;
-        ImmutableList.Builder<Quote> quotes = new ImmutableList.Builder<>();
-        for (QuoteData qt : SampleData.allQuotes) {
-            quotes.add(new Quote(i, qt.text(), qt.attributedTo(), qt.subjects()));
-            i += 1;
-        }
-        return quotes.build();
     }
 }

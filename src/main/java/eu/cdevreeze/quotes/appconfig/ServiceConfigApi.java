@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Chris de Vreeze
  */
 @Configuration
-public interface ServiceAppConfigApi {
+public interface ServiceConfigApi {
 
     @Bean
     QuoteRepository quoteRepository();
