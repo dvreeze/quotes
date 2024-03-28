@@ -21,7 +21,7 @@ import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
-import eu.cdevreeze.quotes.repository.inmemory.InMemoryQuoteRepository;
+import eu.cdevreeze.quotes.repository.nonpersistent.NonPersistentQuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
 import eu.cdevreeze.quotes.service.impl.TransactionalQuoteService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,7 +39,7 @@ public class TestServiceAppConfig implements ServiceAppConfigApi {
 
     @Bean
     public QuoteRepository quoteRepository() {
-        return new InMemoryQuoteRepository(getAllQuotes());
+        return new NonPersistentQuoteRepository(getAllQuotes());
     }
 
     @Bean

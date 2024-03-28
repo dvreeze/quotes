@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.repository.inmemory;
+package eu.cdevreeze.quotes.repository.nonpersistent;
 
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
@@ -32,11 +32,11 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Chris de Vreeze
  */
-public class InMemoryQuoteRepository implements QuoteRepository {
+public class NonPersistentQuoteRepository implements QuoteRepository {
 
     private final AtomicReference<ImmutableList<Quote>> quoteDatabase;
 
-    public InMemoryQuoteRepository(ImmutableList<Quote> initialQuoteDatabaseContent) {
+    public NonPersistentQuoteRepository(ImmutableList<Quote> initialQuoteDatabaseContent) {
         this.quoteDatabase = new AtomicReference<>(initialQuoteDatabaseContent);
     }
 
