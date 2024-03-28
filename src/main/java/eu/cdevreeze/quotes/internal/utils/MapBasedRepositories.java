@@ -35,26 +35,34 @@ public class MapBasedRepositories {
     private MapBasedRepositories() {
     }
 
+    // Operations on ImmutableMap instances
+
     public static <K extends Comparable<? super K>, V> Optional<K> findMaxKey(ImmutableMap<K, V> table) {
         return table.keySet().stream().max(Comparator.naturalOrder());
     }
 
-    public static <K, V> ImmutableMap<K, V> addRowToTable(K key, V row, AtomicReference<ImmutableMap<K, V>> table) {
-        return table.updateAndGet(tbl ->
-                ImmutableMap.<K, V>builder().putAll(tbl).put(key, row).build()
-        );
+    public static <K, V> ImmutableMap<K, V> addRowToTable(K key, V row, ImmutableMap<K, V> table) {
+        return ImmutableMap.<K, V>builder().putAll(table).put(key, row).build();
     }
 
-    public static <V> ImmutableMap<Long, V> addRowToTableGeneratingKey(Function<Long, V> makeRow, AtomicReference<ImmutableMap<Long, V>> table) {
-        return table.updateAndGet(tbl -> {
-            var nextId = 1L + MapBasedRepositories.findMaxKey(tbl).orElse(0L);
-            var row = makeRow.apply(nextId);
-            return ImmutableMap.<Long, V>builder().putAll(tbl).put(nextId, row).build();
-        });
+    public static <V> ImmutableMap<Long, V> addRowToTableGeneratingKey(Function<Long, V> makeRow, ImmutableMap<Long, V> table) {
+        var nextId = 1L + MapBasedRepositories.findMaxKey(table).orElse(0L);
+        var row = makeRow.apply(nextId);
+        return ImmutableMap.<Long, V>builder().putAll(table).put(nextId, row).build();
     }
 
     public static <V> Optional<V> findLastRow(ImmutableMap<Long, V> table) {
         var lastIdOption = MapBasedRepositories.findMaxKey(table);
         return lastIdOption.map(table::get);
+    }
+
+    // Operations on AtomicReferences to ImmutableMap instances
+
+    public static <K, V> ImmutableMap<K, V> addRowToTable(K key, V row, AtomicReference<ImmutableMap<K, V>> table) {
+        return table.updateAndGet(tbl -> addRowToTable(key, row, tbl));
+    }
+
+    public static <V> ImmutableMap<Long, V> addRowToTableGeneratingKey(Function<Long, V> makeRow, AtomicReference<ImmutableMap<Long, V>> table) {
+        return table.updateAndGet(tbl -> addRowToTableGeneratingKey(makeRow, tbl));
     }
 }
