@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.quotes.appconfig;
 
-import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
+import eu.cdevreeze.quotes.props.JdbcRepositorySelectionProperties;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 import eu.cdevreeze.quotes.repository.jdbc.DelegatingJdbcQuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
@@ -36,10 +36,10 @@ import javax.sql.DataSource;
 @ConditionalOnProperty(value = "useNonPersistentRepositories", havingValue = "false", matchIfMissing = true)
 public class DefaultServiceConfig implements ServiceConfigApi {
 
-    private final JdbcRepositoryChoiceProperties props;
+    private final JdbcRepositorySelectionProperties props;
     private final DataSource dataSource;
 
-    public DefaultServiceConfig(JdbcRepositoryChoiceProperties props, DataSource dataSource) {
+    public DefaultServiceConfig(JdbcRepositorySelectionProperties props, DataSource dataSource) {
         this.props = props;
         this.dataSource = dataSource;
     }

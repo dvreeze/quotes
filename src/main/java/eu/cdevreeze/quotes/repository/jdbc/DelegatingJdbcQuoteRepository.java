@@ -19,7 +19,7 @@ package eu.cdevreeze.quotes.repository.jdbc;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
-import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
+import eu.cdevreeze.quotes.props.JdbcRepositorySelectionProperties;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class DelegatingJdbcQuoteRepository implements QuoteRepository {
 
     private final QuoteRepository delegate;
 
-    public DelegatingJdbcQuoteRepository(JdbcRepositoryChoiceProperties props, DataSource dataSource) {
+    public DelegatingJdbcQuoteRepository(JdbcRepositorySelectionProperties props, DataSource dataSource) {
         this.delegate = switch (props.jdbcRepository()) {
             case "JdbcQuoteRepositoryUsingJson" -> new JdbcQuoteRepositoryUsingJson(dataSource);
             case "JdbcQuoteRepositoryUsingOnlyJson" -> new JdbcQuoteRepositoryUsingOnlyJson(dataSource);

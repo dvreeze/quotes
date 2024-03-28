@@ -19,12 +19,12 @@ package eu.cdevreeze.quotes.props;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration property for the choice of (JDBC) QuoteRepository implementation.
+ * Configuration property for the selection of (JDBC) QuoteRepository implementation.
  * <p>
  * See for example <a href="https://www.baeldung.com/configuration-properties-in-spring-boot">configuration properties in Spring Boot</a>.
  *
  * @author Chris de Vreeze
  */
 @ConfigurationProperties(prefix = "implementation")
-public record JdbcRepositoryChoiceProperties(String jdbcRepository) {
+public record JdbcRepositorySelectionProperties(String jdbcRepository) {
 }

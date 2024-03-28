@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.quotes;
 
-import eu.cdevreeze.quotes.props.JdbcRepositoryChoiceProperties;
+import eu.cdevreeze.quotes.props.JdbcRepositorySelectionProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         eu.cdevreeze.quotes.web.ScanMe.class,
         eu.cdevreeze.quotes.appconfig.ScanMe.class
 })
-@EnableConfigurationProperties(JdbcRepositoryChoiceProperties.class)
+@EnableConfigurationProperties(JdbcRepositorySelectionProperties.class)
 public class QuotesApplication {
 
     public static void main(String[] args) {
