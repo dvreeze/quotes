@@ -19,7 +19,7 @@ package eu.cdevreeze.quotes.model;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Sample data, which can be used in unit tests to initialize an InMemoryQuoteRepository.
+ * Sample data, which can be used in unit tests to initialize a NonPersistentQuoteRepository.
  *
  * @author Chris de Vreeze
  */

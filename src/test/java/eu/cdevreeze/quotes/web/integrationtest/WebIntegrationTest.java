@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Web layer integration test, mocking the HTTP server using MockMvc, and taking an InMemoryQuoteRepository
+ * Web layer integration test, mocking the HTTP server using MockMvc, and taking a NonPersistentQuoteRepository
  * as QuoteRepository.
  *
  * @author Chris de Vreeze
