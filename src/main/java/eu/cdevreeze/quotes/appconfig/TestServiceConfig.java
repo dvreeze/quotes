@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Chris de Vreeze
  */
 @Configuration
-@ConditionalOnProperty(value = "useInMemoryRepositories", havingValue = "true")
+@ConditionalOnProperty(value = "useNonPersistentRepositories", havingValue = "true")
 public class TestServiceConfig implements ServiceConfigApi {
 
     @Bean

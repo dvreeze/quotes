@@ -33,7 +33,7 @@ import javax.sql.DataSource;
  * @author Chris de Vreeze
  */
 @Configuration
-@ConditionalOnProperty(value = "useInMemoryRepositories", havingValue = "false", matchIfMissing = true)
+@ConditionalOnProperty(value = "useNonPersistentRepositories", havingValue = "false", matchIfMissing = true)
 public class DefaultServiceConfig implements ServiceConfigApi {
 
     private final JdbcRepositoryChoiceProperties props;

@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = {"/test-application.properties"})
+@TestPropertySource(locations = {"/test-repository-overrides.properties"})
 class WebIntegrationTest {
 
     private final MockMvc mockMvc;
