@@ -16,13 +16,9 @@
 
 package eu.cdevreeze.quotes.web.integrationtest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.model.SampleData;
@@ -181,7 +177,7 @@ class WebIntegrationTest {
         var quoteText =
                 "We'll know our disinformation program is complete when everything the American public believes is false.";
         var quoteData = new QuoteData(quoteText, "William Casey", ImmutableList.of("corrupt government"));
-        var objectMapper = getObjectMapper();
+        var objectMapper = ObjectMappers.getObjectMapper();
         var jsonRequestPayload = objectMapper.writer().writeValueAsString(quoteData);
 
         this.mockMvc.perform(
@@ -214,13 +210,5 @@ class WebIntegrationTest {
         var newNumberOfQuotes = quoteService.findAllQuotes().size();
 
         Assertions.assertEquals(newNumberOfQuotes, numberOfQuotes - 1);
-    }
-
-    private ObjectMapper getObjectMapper() {
-        return JsonMapper.builder()
-                .addModule(new Jdk8Module())
-                .addModule(new GuavaModule())
-                .build()
-                .enable(SerializationFeature.INDENT_OUTPUT);
     }
 }
