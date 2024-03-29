@@ -55,4 +55,10 @@ public class TransactionalQuoteService implements QuoteService {
     public Quote addQuote(QuoteData quote) {
         return quoteRepository.addQuote(quote);
     }
+
+    @Override
+    @Transactional
+    public void deleteQuote(long quoteId) {
+        quoteRepository.deleteQuote(quoteId);
+    }
 }

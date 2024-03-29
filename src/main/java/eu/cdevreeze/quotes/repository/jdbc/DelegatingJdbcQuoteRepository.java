@@ -62,4 +62,9 @@ public class DelegatingJdbcQuoteRepository implements QuoteRepository {
     public Quote addQuote(QuoteData quote) {
         return delegate.addQuote(quote);
     }
+
+    @Override
+    public void deleteQuote(long quoteId) {
+        delegate.deleteQuote(quoteId);
+    }
 }

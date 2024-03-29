@@ -49,7 +49,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Chris de Vreeze
  */
-@SpringBootTest
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK
+)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = {"classpath:test-repository-overrides.properties"})
 @DirtiesContext
@@ -125,8 +127,8 @@ class WebIntegrationTest {
 
         this.mockMvc.perform(
                         post("/addQuote")
-                                .content(jsonRequestPayload)
                                 .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonRequestPayload)
                                 .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(status().isOk())

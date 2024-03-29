@@ -23,9 +23,7 @@ import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.service.QuoteService;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
 
@@ -56,10 +54,18 @@ public class QuotesController {
         return quoteService.findAllQuotes();
     }
 
+    // TODO Improve HTTP API
+
     @PostMapping(value = "/addQuote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Quote addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
-        // We need the RequestEntity "wrapper", or else the body is null
+        // We need the RequestEntity "wrapper" or RequestBody annotation, or else the request body is null
+        // Thus we tell Spring MVC explicitly not to treat the QuoteData-typed method parameter as request parameter
         var quoteData = requestEntity.getBody();
         return quoteService.addQuote(quoteData);
+    }
+
+    @DeleteMapping(value = "/quotes/{quoteId}")
+    public void deleteQuote(@PathVariable long quoteId) {
+        quoteService.deleteQuote(quoteId);
     }
 }

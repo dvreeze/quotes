@@ -19,9 +19,11 @@ package eu.cdevreeze.quotes.internal.utils;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Small utility class to make working with non-persistent collection-backed "databases" a bit easier.
@@ -45,6 +47,15 @@ public class MapBasedRepositories {
         return ImmutableMap.<K, V>builder().putAll(table).put(key, row).build();
     }
 
+    public static <K, V> ImmutableMap<K, V> deleteRow(K key, ImmutableMap<K, V> table) {
+        return ImmutableMap.<K, V>builder()
+                .putAll(
+                        table.entrySet().stream()
+                                .filter(kv -> !kv.getKey().equals(key))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
+                .build();
+    }
+
     public static <V> ImmutableMap<Long, V> addRowToTableGeneratingKey(Function<Long, V> makeRow, ImmutableMap<Long, V> table) {
         var nextId = 1L + MapBasedRepositories.findMaxKey(table).orElse(0L);
         var row = makeRow.apply(nextId);
@@ -60,6 +71,10 @@ public class MapBasedRepositories {
 
     public static <K, V> ImmutableMap<K, V> addRowToTable(K key, V row, AtomicReference<ImmutableMap<K, V>> table) {
         return table.updateAndGet(tbl -> addRowToTable(key, row, tbl));
+    }
+
+    public static <K, V> ImmutableMap<K, V> deleteRow(K key, AtomicReference<ImmutableMap<K, V>> table) {
+        return table.updateAndGet(tbl -> deleteRow(key, tbl));
     }
 
     public static <V> ImmutableMap<Long, V> addRowToTableGeneratingKey(Function<Long, V> makeRow, AtomicReference<ImmutableMap<Long, V>> table) {

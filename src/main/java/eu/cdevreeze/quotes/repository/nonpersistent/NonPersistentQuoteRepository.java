@@ -59,4 +59,9 @@ public class NonPersistentQuoteRepository implements QuoteRepository {
         );
         return MapBasedRepositories.findLastRow(updatedDbContent).orElseThrow();
     }
+
+    @Override
+    public void deleteQuote(long quoteId) {
+        MapBasedRepositories.deleteRow(quoteId, quoteDatabase);
+    }
 }

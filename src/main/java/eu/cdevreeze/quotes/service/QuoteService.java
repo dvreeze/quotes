@@ -32,4 +32,6 @@ public interface QuoteService {
     ImmutableList<Quote> findBySubject(String subject);
 
     Quote addQuote(QuoteData quote);
+
+    void deleteQuote(long quoteId);
 }

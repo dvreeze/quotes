@@ -75,6 +75,12 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
         return quoteWithId;
     }
 
+    @Override
+    public void deleteQuote(long quoteId) {
+        deleteQuoteSubjects(quoteId);
+        deleteQuoteWithoutSubjects(quoteId);
+    }
+
     // Nice reuse across select queries
     // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
     private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
@@ -121,5 +127,15 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
                 .param("quote_id", quote.id())
                 .param("subject", subject)
                 .update());
+    }
+
+    private void deleteQuoteWithoutSubjects(long quoteId) {
+        String sql = "delete from quote where id = :quote_id";
+        jdbcClient.sql(sql).param("quote_id", quoteId).update();
+    }
+
+    private void deleteQuoteSubjects(long quoteId) {
+        String sql = "delete from quote_subject where quote_id = :quote_id";
+        jdbcClient.sql(sql).param("quote_id", quoteId).update();
     }
 }
