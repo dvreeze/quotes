@@ -16,10 +16,15 @@
 
 package eu.cdevreeze.quotes.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
+import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.service.QuoteService;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Random;
@@ -38,7 +43,7 @@ public class QuotesController {
         this.quoteService = quoteService;
     }
 
-    @GetMapping(value = "/randomQuote.json", produces = "application/json")
+    @GetMapping(value = "/randomQuote.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public Quote randomQuote() {
         var allQuotes = quoteService.findAllQuotes();
         var random = new Random();
@@ -46,8 +51,15 @@ public class QuotesController {
         return allQuotes.get(randomIdx);
     }
 
-    @GetMapping(value = "/quotes.json", produces = "application/json")
+    @GetMapping(value = "/quotes.json", produces = MediaType.APPLICATION_JSON_VALUE)
     public ImmutableList<Quote> quotes() {
         return quoteService.findAllQuotes();
+    }
+
+    @PostMapping(value = "/addQuote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Quote addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
+        // We need the RequestEntity "wrapper", or else the body is null
+        var quoteData = requestEntity.getBody();
+        return quoteService.addQuote(quoteData);
     }
 }
