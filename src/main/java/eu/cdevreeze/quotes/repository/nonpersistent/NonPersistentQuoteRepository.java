@@ -39,6 +39,10 @@ public class NonPersistentQuoteRepository implements QuoteRepository {
         this.quoteDatabase = new AtomicReference<>(initialQuoteDatabaseContent);
     }
 
+    public void reset(ImmutableMap<Long, Quote> initialQuoteDatabaseContent) {
+        this.quoteDatabase.set(initialQuoteDatabaseContent);
+    }
+
     @Override
     public ImmutableList<Quote> findAllQuotes() {
         return quoteDatabase.get().values().stream().collect(ImmutableList.toImmutableList());
@@ -48,6 +52,13 @@ public class NonPersistentQuoteRepository implements QuoteRepository {
     public ImmutableList<Quote> findBySubject(String subject) {
         return findAllQuotes().stream()
                 .filter(qt -> qt.subjects().contains(subject))
+                .collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
+    public ImmutableList<Quote> findByAttributedTo(String attributedTo) {
+        return findAllQuotes().stream()
+                .filter(qt -> qt.attributedTo().equals(attributedTo))
                 .collect(ImmutableList.toImmutableList());
     }
 

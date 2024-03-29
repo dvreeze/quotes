@@ -54,9 +54,17 @@ public class QuotesController {
         return quoteService.findAllQuotes();
     }
 
-    // TODO Improve HTTP API
+    @GetMapping(value = "/quotesBySubject.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ImmutableList<Quote> quotesBySubject(@RequestParam String subject) {
+        return quoteService.findBySubject(subject);
+    }
 
-    @PostMapping(value = "/addQuote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/quotesByAttributedTo.json", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ImmutableList<Quote> quotesByAttributedTo(@RequestParam String attributedTo) {
+        return quoteService.findByAttributedTo(attributedTo);
+    }
+
+    @PutMapping(value = "/quote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Quote addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
         // We need the RequestEntity "wrapper" or RequestBody annotation, or else the request body is null
         // Thus we tell Spring MVC explicitly not to treat the QuoteData-typed method parameter as request parameter

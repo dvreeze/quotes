@@ -62,6 +62,15 @@ public class JdbcQuoteRepository implements QuoteRepository {
     }
 
     @Override
+    public ImmutableList<Quote> findByAttributedTo(String attributedTo) {
+        String sql = String.format("%s%n", findQuotesBaseSql) + """
+                where qt.attributedTo = :attributedTo""";
+
+        var stmt = jdbcClient.sql(sql).param("attributedTo", attributedTo);
+        return findQuotes(stmt);
+    }
+
+    @Override
     public Quote addQuote(QuoteData quote) {
         var quoteId = addQuoteWithoutSubjects(quote);
         var quoteWithId =

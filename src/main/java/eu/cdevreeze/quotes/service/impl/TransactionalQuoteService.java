@@ -51,6 +51,12 @@ public class TransactionalQuoteService implements QuoteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public ImmutableList<Quote> findByAttributedTo(String attributedTo) {
+        return quoteRepository.findByAttributedTo(attributedTo);
+    }
+
+    @Override
     @Transactional
     public Quote addQuote(QuoteData quote) {
         return quoteRepository.addQuote(quote);

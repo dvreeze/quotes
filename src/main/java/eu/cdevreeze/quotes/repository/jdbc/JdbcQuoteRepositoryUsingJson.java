@@ -67,6 +67,13 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
     }
 
     @Override
+    public ImmutableList<Quote> findByAttributedTo(String attributedTo) {
+        // Inefficient. Improve the SQL instead to limit the result set.
+        return findAllQuotes().stream()
+                .filter(qt -> qt.attributedTo().equals(attributedTo)).collect(ImmutableList.toImmutableList());
+    }
+
+    @Override
     public Quote addQuote(QuoteData quote) {
         var quoteId = addQuoteWithoutSubjects(quote);
         var quoteWithId =

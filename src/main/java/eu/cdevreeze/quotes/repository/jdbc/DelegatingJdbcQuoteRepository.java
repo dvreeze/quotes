@@ -59,6 +59,11 @@ public class DelegatingJdbcQuoteRepository implements QuoteRepository {
     }
 
     @Override
+    public ImmutableList<Quote> findByAttributedTo(String attributedTo) {
+        return delegate.findByAttributedTo(attributedTo);
+    }
+
+    @Override
     public Quote addQuote(QuoteData quote) {
         return delegate.addQuote(quote);
     }

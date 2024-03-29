@@ -22,11 +22,16 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.model.SampleData;
+import eu.cdevreeze.quotes.repository.QuoteRepository;
+import eu.cdevreeze.quotes.repository.nonpersistent.NonPersistentQuoteRepository;
+import eu.cdevreeze.quotes.service.QuoteService;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,8 +43,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,13 +59,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(locations = {"classpath:test-repository-overrides.properties"})
 @DirtiesContext
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebIntegrationTest {
 
     private final MockMvc mockMvc;
+    private final QuoteService quoteService;
+    private final QuoteRepository quoteRepository;
+
+    private ImmutableMap<Long, Quote> initialDatabaseContent = ImmutableMap.of();
 
     @Autowired
-    public WebIntegrationTest(MockMvc mockMvc) {
+    public WebIntegrationTest(MockMvc mockMvc, QuoteService quoteService, QuoteRepository quoteRepository) {
         this.mockMvc = mockMvc;
+        this.quoteService = quoteService;
+        this.quoteRepository = quoteRepository;
+    }
+
+    @BeforeAll
+    void initialise() {
+        initialDatabaseContent =
+                quoteRepository.findAllQuotes().stream()
+                        .collect(ImmutableMap.toImmutableMap(Quote::id, qt -> qt));
+    }
+
+    @BeforeEach
+    void reloadDatabase() {
+        ((NonPersistentQuoteRepository) quoteRepository).reset(initialDatabaseContent);
     }
 
     @Test
@@ -97,6 +120,40 @@ class WebIntegrationTest {
     }
 
     @Test
+    void shouldReturnQuotesBySubject() throws Exception {
+        var subject = "peace";
+        this.mockMvc.perform(get("/quotesBySubject.json").param("subject", subject))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].attributedTo", Matchers.equalTo("Ron Paul")))
+                .andExpect(jsonPath("$[0].subjects[0]", Matchers.equalTo("liberty")))
+                .andExpect(jsonPath("$[0].subjects[1]", Matchers.equalTo("peace")))
+                .andExpect(jsonPath("$[1].attributedTo", Matchers.equalTo("Ron Paul")))
+                .andExpect(jsonPath("$[1].subjects[0]", Matchers.equalTo("liberty")))
+                .andExpect(jsonPath("$[1].subjects[1]", Matchers.equalTo("peace")));
+    }
+
+    @Test
+    void shouldReturnQuotesByAttributedTo() throws Exception {
+        var attributedTo = "Wim Hof";
+        this.mockMvc.perform(get("/quotesByAttributedTo.json").param("attributedTo", attributedTo))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].attributedTo", Matchers.equalTo("Wim Hof")))
+                .andExpect(jsonPath("$[0].subjects[0]", Matchers.equalTo("inner strength")))
+                .andExpect(jsonPath("$[1].attributedTo", Matchers.equalTo("Wim Hof")))
+                .andExpect(jsonPath("$[1].subjects[0]", Matchers.equalTo("inner strength")))
+                .andExpect(jsonPath("$[2].attributedTo", Matchers.equalTo("Wim Hof")))
+                .andExpect(jsonPath("$[2].subjects[0]", Matchers.equalTo("inner strength")))
+                .andExpect(jsonPath("$[3].attributedTo", Matchers.equalTo("Wim Hof")))
+                .andExpect(jsonPath("$[3].subjects[0]", Matchers.equalTo("inner strength")))
+                .andExpect(jsonPath("$[4].attributedTo", Matchers.equalTo("Wim Hof")))
+                .andExpect(jsonPath("$[4].subjects[0]", Matchers.equalTo("inner strength")));
+    }
+
+    @Test
     void shouldReturnRandomQuote() throws Exception {
         List<Matcher<? super String>> attributedToMatchers = SampleData.allQuotes.stream()
                 .map(qt -> (Matcher<? super String>) Matchers.equalTo(qt.attributedTo())).collect(Collectors.toList());
@@ -119,6 +176,8 @@ class WebIntegrationTest {
 
     @Test
     void shouldAddQuote() throws Exception {
+        var numberOfQuotes = quoteService.findAllQuotes().size();
+
         var quoteText =
                 "We'll know our disinformation program is complete when everything the American public believes is false.";
         var quoteData = new QuoteData(quoteText, "William Casey", ImmutableList.of("corrupt government"));
@@ -126,7 +185,7 @@ class WebIntegrationTest {
         var jsonRequestPayload = objectMapper.writer().writeValueAsString(quoteData);
 
         this.mockMvc.perform(
-                        post("/addQuote")
+                        put("/quote")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequestPayload)
                                 .accept(MediaType.APPLICATION_JSON)
@@ -136,6 +195,25 @@ class WebIntegrationTest {
                 .andExpect(jsonPath("$.text", Matchers.equalTo(quoteText)))
                 .andExpect(jsonPath("$.attributedTo", Matchers.equalTo("William Casey")))
                 .andExpect(jsonPath("$.subjects[0]", Matchers.equalTo("corrupt government")));
+
+        var newNumberOfQuotes = quoteService.findAllQuotes().size();
+
+        Assertions.assertEquals(newNumberOfQuotes, numberOfQuotes + 1);
+    }
+
+    @Test
+    void shouldDeleteQuote() throws Exception {
+        var numberOfQuotes = quoteService.findAllQuotes().size();
+
+        var quoteId = 27L; // Quote by Michael Ledeen
+
+        this.mockMvc.perform(delete("/quotes/" + quoteId))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        var newNumberOfQuotes = quoteService.findAllQuotes().size();
+
+        Assertions.assertEquals(newNumberOfQuotes, numberOfQuotes - 1);
     }
 
     private ObjectMapper getObjectMapper() {
