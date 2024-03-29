@@ -1,4 +1,4 @@
-# Sample "quotes" Spring web application
+# Sample "quotes" Spring Boot web application
 
 ### About the code
 
@@ -32,6 +32,19 @@ Documentation I consulted includes the links in
 [HELP.md](https://github.com/dvreeze/quotes/blob/master/HELP.md),
 as well as [getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started)
 and [using Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html).
+
+Relevant API documentation:
+[Spring Framework API doc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/) and
+[Spring Boot API doc](https://docs.spring.io/spring-boot/docs/current/api/).
+
+Relevant reference documentation:
+[Spring Framework reference doc](https://docs.spring.io/spring-framework/reference/) and
+[Spring Boot reference doc](https://docs.spring.io/spring-boot/docs/current/reference/html/).
+Also consult the [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
+and [Best Practices for Spring Boot Application Testing](https://spring.academy/guides/spring-spring-boot-testing).
+
+Authoritative documentation on HTTP methods can be found
+in [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
 
 ### Running the code
 
