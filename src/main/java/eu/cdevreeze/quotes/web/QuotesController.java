@@ -64,12 +64,14 @@ public class QuotesController {
         return quoteService.findByAttributedTo(attributedTo);
     }
 
-    @PutMapping(value = "/quote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Quote addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
+    // TODO Follow MDN documentation on HTTP methods, w.r.t. status codes etc.
+
+    @PutMapping(value = "/quote", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
         // We need the RequestEntity "wrapper" or RequestBody annotation, or else the request body is null
         // Thus we tell Spring MVC explicitly not to treat the QuoteData-typed method parameter as request parameter
         var quoteData = requestEntity.getBody();
-        return quoteService.addQuote(quoteData);
+        quoteService.addQuote(quoteData);
     }
 
     @DeleteMapping(value = "/quotes/{quoteId}")

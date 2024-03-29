@@ -18,7 +18,6 @@ package eu.cdevreeze.quotes.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
-import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,19 +56,14 @@ public class QuoteAdder {
         var objectMapper = ObjectMappers.getObjectMapper();
         var quoteAsJson = objectMapper.writer().writeValueAsString(quoteData);
 
-        ResponseEntity<Quote> responseEntity = restClient.put()
+        ResponseEntity<Void> responseEntity = restClient.put()
                 .uri("/quote")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
                 .body(quoteAsJson)
                 .retrieve()
-                .toEntity(Quote.class);
+                .toBodilessEntity();
 
         logger.info(String.format("Response status code: %s", responseEntity.getStatusCode()));
-        logger.info(String.format(
-                "Response payload:%n%s",
-                objectMapper.writer().writeValueAsString(responseEntity.getBody()))
-        );
     }
 
     public static void main(String[] args) throws IOException {
