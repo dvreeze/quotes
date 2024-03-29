@@ -16,11 +16,7 @@
 
 package eu.cdevreeze.quotes.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -40,14 +36,6 @@ public class WebSupportConfig {
      */
     @Bean
     public HttpMessageConverter<Object> httpMessageConverter() {
-        return new MappingJackson2HttpMessageConverter(getObjectMapper());
-    }
-
-    private ObjectMapper getObjectMapper() {
-        return JsonMapper.builder()
-                .addModule(new Jdk8Module())
-                .addModule(new GuavaModule())
-                .build()
-                .enable(SerializationFeature.INDENT_OUTPUT);
+        return new MappingJackson2HttpMessageConverter(ObjectMappers.getObjectMapper());
     }
 }

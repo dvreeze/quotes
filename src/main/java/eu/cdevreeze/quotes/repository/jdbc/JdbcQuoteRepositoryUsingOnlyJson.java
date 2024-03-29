@@ -17,11 +17,9 @@
 package eu.cdevreeze.quotes.repository.jdbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
@@ -96,7 +94,7 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     // Nice reuse across select queries
     // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
     private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
-        var objectMapper = getObjectMapper();
+        var objectMapper = ObjectMappers.getObjectMapper(false);
         return stmt
                 .query((ResultSet rs, int rowNum) -> mapRow(rs, objectMapper))
                 .list()
@@ -142,9 +140,5 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     private void deleteQuoteSubjects(long quoteId) {
         String sql = "delete from quote_subject where quote_id = :quote_id";
         jdbcClient.sql(sql).param("quote_id", quoteId).update();
-    }
-
-    private ObjectMapper getObjectMapper() {
-        return JsonMapper.builder().addModule(new Jdk8Module()).addModule(new GuavaModule()).build();
     }
 }
