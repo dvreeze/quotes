@@ -1,26 +1,26 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <title>Quotes</title>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 <h1>Quotes</h1>
 <table>
     <thead>
     <tr>
-        <td>ID</td>
-        <td>Attributed to</td>
-        <td>Text</td>
-        <td>Subjects</td>
+        <th>ID</th>
+        <th>Attributed to</th>
+        <th>Text</th>
+        <th>Subjects</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="quote : ${quotes}">
-        <td th:text="${quote.id}">1</td>
-        <td th:text="${quote.attributedTo}">Attributed to ...</td>
-        <td th:text="${quote.text}">Text ...</td>
-        <td th:text="${#strings.listJoin(quote.subjects,', ')}">Subjects ...</td>
+    <tr data-th-each="quote : ${quotes}">
+        <td data-th-text="${quote.id}">1</td>
+        <td data-th-text="${quote.attributedTo}">Attributed to ...</td>
+        <td data-th-text="${quote.text}">Text ...</td>
+        <td data-th-text="${#strings.listJoin(quote.subjects,', ')}">Subjects ...</td>
     </tr>
     </tbody>
 </table>

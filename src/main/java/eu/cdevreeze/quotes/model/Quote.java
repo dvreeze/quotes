@@ -22,7 +22,7 @@ import java.util.Objects;
 
 /**
  * Quote model data class (or DTO). It is deeply immutable and thread-safe. Unlike classes with Lombok annotations,
- * it does not depend on code generation before being complete from the perspective of the compiler.
+ * it does not depend on code generation before being complete from the perspective of the reader of the code.
  *
  * @author Chris de Vreeze
  */

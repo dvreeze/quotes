@@ -45,6 +45,11 @@ Relevant reference documentation:
 Also consult the [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)
 and [Best Practices for Spring Boot Application Testing](https://spring.academy/guides/spring-spring-boot-testing).
 
+For the combination of Thymeleaf and Spring, consult
+[Thymeleaf and Spring](https://www.thymeleaf.org/doc/tutorials/3.1/thymeleafspring.html).
+As a prerequisite, [Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
+should be read first (at least the basics).
+
 Authoritative documentation on HTTP methods can be found
 in [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
 
