@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.web;
+package eu.cdevreeze.quotes.web.rest;
 
 import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.service.QuoteService;
@@ -25,19 +25,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Quotes admin web controller.
+ * Quotes admin web REST controller.
  *
  * @author Chris de Vreeze
  */
 @RestController
 @RequestMapping("/admin")
-public class QuotesAdminController {
+public class QuotesAdminRestController {
 
-    private final Logger logger = LoggerFactory.getLogger(QuotesAdminController.class);
+    private final Logger logger = LoggerFactory.getLogger(QuotesAdminRestController.class);
 
     private final QuoteService quoteService;
 
-    public QuotesAdminController(QuoteService quoteService) {
+    public QuotesAdminRestController(QuoteService quoteService) {
         this.quoteService = quoteService;
     }
 

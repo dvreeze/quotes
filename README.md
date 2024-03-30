@@ -36,6 +36,8 @@ and [using Spring Boot](https://docs.spring.io/spring-boot/docs/current/referenc
 Relevant API documentation:
 [Spring Framework API doc](https://docs.spring.io/spring-framework/docs/current/javadoc-api/) and
 [Spring Boot API doc](https://docs.spring.io/spring-boot/docs/current/api/).
+Thymeleaf API documentation can be found
+[here](https://www.thymeleaf.org/apidocs/thymeleaf/3.1.2.RELEASE/).
 
 Relevant reference documentation:
 [Spring Framework reference doc](https://docs.spring.io/spring-framework/reference/) and

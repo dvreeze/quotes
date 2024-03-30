@@ -18,8 +18,8 @@ package eu.cdevreeze.quotes;
 
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
-import eu.cdevreeze.quotes.web.QuotesAdminController;
-import eu.cdevreeze.quotes.web.QuotesController;
+import eu.cdevreeze.quotes.web.rest.QuotesAdminRestController;
+import eu.cdevreeze.quotes.web.rest.QuotesRestController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,27 +34,27 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 class QuotesApplicationTests {
 
-    private final QuotesController quotesController;
-    private final QuotesAdminController quotesAdminController;
+    private final QuotesRestController quotesRestController;
+    private final QuotesAdminRestController quotesAdminRestController;
     private final QuoteService quoteService;
     private final QuoteRepository quoteRepository;
 
     @Autowired
     public QuotesApplicationTests(
-            QuotesController quotesController,
-            QuotesAdminController quotesAdminController,
+            QuotesRestController quotesRestController,
+            QuotesAdminRestController quotesAdminRestController,
             QuoteService quoteService,
             QuoteRepository quoteRepository) {
-        this.quotesController = quotesController;
-        this.quotesAdminController = quotesAdminController;
+        this.quotesRestController = quotesRestController;
+        this.quotesAdminRestController = quotesAdminRestController;
         this.quoteService = quoteService;
         this.quoteRepository = quoteRepository;
     }
 
     @Test
     void contextLoads() {
-        assertNotNull(quotesController);
-        assertNotNull(quotesAdminController);
+        assertNotNull(quotesRestController);
+        assertNotNull(quotesAdminRestController);
         assertNotNull(quoteService);
         assertNotNull(quoteRepository);
     }

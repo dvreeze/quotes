@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.web;
+package eu.cdevreeze.quotes.web.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
@@ -28,16 +28,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Random;
 
 /**
- * Quotes web controller.
+ * Quotes web REST controller.
  *
  * @author Chris de Vreeze
  */
 @RestController
-public class QuotesController {
+public class QuotesRestController {
 
     private final QuoteService quoteService;
 
-    public QuotesController(QuoteService quoteService) {
+    public QuotesRestController(QuoteService quoteService) {
         this.quoteService = quoteService;
     }
 
