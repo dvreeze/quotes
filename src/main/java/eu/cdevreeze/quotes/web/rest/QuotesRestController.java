@@ -21,8 +21,10 @@ import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.service.QuoteService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
@@ -64,14 +66,15 @@ public class QuotesRestController {
         return quoteService.findByAttributedTo(attributedTo);
     }
 
-    // TODO Follow MDN documentation on HTTP methods, w.r.t. status codes etc.
+    // Below I considered using the PUT HTTP method, but that would require idempotency. Hence, the use of HTTP POST.
 
-    @PutMapping(value = "/quote", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
+    @PostMapping(value = "/quote", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Quote> addQuote(RequestEntity<QuoteData> requestEntity) throws JsonProcessingException {
         // We need the RequestEntity "wrapper" or RequestBody annotation, or else the request body is null
         // Thus we tell Spring MVC explicitly not to treat the QuoteData-typed method parameter as request parameter
         var quoteData = requestEntity.getBody();
-        quoteService.addQuote(quoteData);
+        var quote = quoteService.addQuote(quoteData);
+        return new ResponseEntity<>(quote, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/quotes/{quoteId}")

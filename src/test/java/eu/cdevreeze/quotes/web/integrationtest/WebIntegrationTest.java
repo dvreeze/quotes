@@ -181,11 +181,15 @@ class WebIntegrationTest {
         var jsonRequestPayload = objectMapper.writer().writeValueAsString(quoteData);
 
         this.mockMvc.perform(
-                        put("/quote")
+                        post("/quote")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonRequestPayload)
+                                .accept(MediaType.APPLICATION_JSON)
                 ).andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.attributedTo", Matchers.equalTo(quoteData.attributedTo())))
+                .andExpect(jsonPath("$.text", Matchers.equalTo(quoteData.text())))
+                .andExpect(jsonPath("$.subjects[0]", Matchers.equalTo(quoteData.subjects().getFirst())));
 
         var newNumberOfQuotes = quoteService.findAllQuotes().size();
 

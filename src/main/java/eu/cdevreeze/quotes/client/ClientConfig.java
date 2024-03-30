@@ -16,10 +16,15 @@
 
 package eu.cdevreeze.quotes.client;
 
+import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.util.List;
 
 /**
  * Non-idiomatic Spring Configuration for system properties "scheme", "hostName" and "port".
@@ -52,6 +57,10 @@ public class ClientConfig {
         var baseUrl = new DefaultUriBuilderFactory().builder()
                 .scheme(scheme()).host(hostName()).port(port()).toUriString();
 
-        return RestClient.create(baseUrl);
+        var httpMessageConverter = new MappingJackson2HttpMessageConverter(ObjectMappers.getObjectMapper());
+
+        var restTemplate = new RestTemplate(List.of(httpMessageConverter));
+
+        return RestClient.builder(restTemplate).baseUrl(baseUrl).build();
     }
 }

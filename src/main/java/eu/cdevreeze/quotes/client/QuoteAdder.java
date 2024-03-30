@@ -18,6 +18,7 @@ package eu.cdevreeze.quotes.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
+import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,20 +51,24 @@ public class QuoteAdder {
         this.restClient = restClient;
     }
 
-    public void addQuote(QuoteData quoteData) throws JsonProcessingException {
+    public Quote addQuote(QuoteData quoteData) throws JsonProcessingException {
         logger.info(String.format("Trying to add a quote attributed to %s", quoteData.attributedTo()));
 
-        var objectMapper = ObjectMappers.getObjectMapper();
-        var quoteAsJson = objectMapper.writer().writeValueAsString(quoteData);
-
-        ResponseEntity<Void> responseEntity = restClient.put()
+        ResponseEntity<Quote> responseEntity = restClient.post()
                 .uri("/quote")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(quoteAsJson)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(quoteData)
                 .retrieve()
-                .toBodilessEntity();
+                .toEntity(Quote.class);
 
         logger.info(String.format("Response status code: %s", responseEntity.getStatusCode()));
+        logger.info(String.format(
+                "Response payload:%n%s",
+                ObjectMappers.getObjectMapper().writer().writeValueAsString(responseEntity.getBody()))
+        );
+
+        return responseEntity.getBody();
     }
 
     public static void main(String[] args) throws IOException {
