@@ -8,6 +8,7 @@
 <body>
 <section class="main">
 <h1>Quotes</h1>
+<div class="filters" data-th-text="${(quoteFilters.isEmpty()) ? 'All quotes' : ('Filter(s): ' + #strings.listJoin(quoteFilters,', '))}">Quote filter ...</div>
 <table>
     <thead>
     <tr>

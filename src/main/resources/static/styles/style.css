@@ -4,6 +4,12 @@ section.main {
   margin-right: 10px;
   margin-left: 10px;
 }
+div.filters {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+}
 table {
   table-layout: fixed;
   width: 100%;

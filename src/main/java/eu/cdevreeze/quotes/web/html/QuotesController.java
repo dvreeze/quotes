@@ -16,10 +16,14 @@
 
 package eu.cdevreeze.quotes.web.html;
 
+import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.service.QuoteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Optional;
 
 /**
  * Quotes web controller (for use in the HTML site).
@@ -36,9 +40,23 @@ public class QuotesController {
     }
 
     @GetMapping(value = "quotes.html")
-    public ModelAndView quotes() {
+    public ModelAndView quotes(
+            @RequestParam(required = false) String attributedTo,
+            @RequestParam(required = false) String subject
+    ) {
         var modelAndView = new ModelAndView("quotes.html");
-        modelAndView.addObject("quotes", quoteService.findAllQuotes());
+        var quotes = quoteService.findAllQuotes()
+                .stream()
+                .filter(qt -> attributedTo == null || qt.attributedTo().equals(attributedTo))
+                .filter(qt -> subject == null || qt.subjects().contains(subject))
+                .collect(ImmutableList.toImmutableList());
+        var quoteFilters = ImmutableList.<String>builder()
+                .addAll(Optional.ofNullable(attributedTo).stream().toList())
+                .addAll(Optional.ofNullable(subject).stream().toList())
+                .build();
+
+        modelAndView.addObject("quotes", quotes);
+        modelAndView.addObject("quoteFilters", quoteFilters);
         return modelAndView;
     }
 }
