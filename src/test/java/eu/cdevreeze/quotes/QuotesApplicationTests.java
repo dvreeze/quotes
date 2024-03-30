@@ -21,8 +21,19 @@ import eu.cdevreeze.quotes.service.QuoteService;
 import eu.cdevreeze.quotes.web.rest.QuotesAdminRestController;
 import eu.cdevreeze.quotes.web.rest.QuotesRestController;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.ViewResolver;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,12 +43,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author Chris de Vreeze
  */
 @SpringBootTest
-class QuotesApplicationTests {
+class QuotesApplicationTests implements ApplicationContextAware {
+
+    private final Logger logger = LoggerFactory.getLogger(QuotesApplicationTests.class);
 
     private final QuotesRestController quotesRestController;
     private final QuotesAdminRestController quotesAdminRestController;
     private final QuoteService quoteService;
     private final QuoteRepository quoteRepository;
+
+    private ApplicationContext applicationContext;
 
     @Autowired
     public QuotesApplicationTests(
@@ -57,6 +72,28 @@ class QuotesApplicationTests {
         assertNotNull(quotesAdminRestController);
         assertNotNull(quoteService);
         assertNotNull(quoteRepository);
+
+        var viewResolverBeanMap = applicationContext.getBeansOfType(ViewResolver.class);
+        Map<String, HttpMessageConverter<?>> httpMessageConverterBeanMap =
+                applicationContext.getBeansOfType(HttpMessageConverter.class)
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, kv -> (HttpMessageConverter<?>) kv.getValue()));
+
+        for (Map.Entry<String, ViewResolver> kv : viewResolverBeanMap.entrySet()) {
+            logger.info(String.format("View resolver '%s' of type %s", kv.getKey(), kv.getValue()));
+        }
+        for (Map.Entry<String, HttpMessageConverter<?>> kv : httpMessageConverterBeanMap.entrySet()) {
+            logger.info(
+                    String.format(
+                            "HTTP message converter '%s' of type %s",
+                            kv.getKey(),
+                            kv.getValue()));
+        }
     }
 
+    @Override
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }
