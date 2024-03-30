@@ -28,6 +28,8 @@ The project uses a familiar layering (web, transactional services, repositories)
 and separates interfaces from implementations for services and
 repositories.
 
+### Relevant documentation
+
 Documentation I consulted includes the links in
 [HELP.md](https://github.com/dvreeze/quotes/blob/master/HELP.md),
 as well as [getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started)
@@ -52,6 +54,9 @@ should be read first (at least the basics).
 
 Authoritative documentation on HTTP methods can be found
 in [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
+
+Interesting articles about best practices include
+[Stop Using Autowired](https://www.linkedin.com/pulse/you-should-stop-using-spring-autowired-felix-coutinho).
 
 ### Running the code
 
