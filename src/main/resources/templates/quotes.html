@@ -3,8 +3,10 @@
 <head>
     <title>Quotes</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link data-th-href="@{/styles/style.css}" rel="stylesheet" />
 </head>
 <body>
+<section class="main">
 <h1>Quotes</h1>
 <table>
     <thead>
@@ -16,7 +18,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr data-th-each="quote : ${quotes}">
+    <tr data-th-each="quote,rowStat : ${quotes}">
         <td data-th-text="${quote.id}">1</td>
         <td data-th-text="${quote.attributedTo}">Attributed to ...</td>
         <td data-th-text="${quote.text}">Text ...</td>
@@ -24,5 +26,6 @@
     </tr>
     </tbody>
 </table>
+</section>
 </body>
 </html>
