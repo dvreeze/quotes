@@ -17,6 +17,7 @@
 package eu.cdevreeze.quotes.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Preconditions;
 import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
@@ -30,11 +31,13 @@ import org.springframework.web.client.RestClient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * Client program to add a quote via the HTTP API. The program input is a file path where the file
- * contains a QuoteData instance as JSON string.
+ * Client program to add quotes via the HTTP API. The program input is a file path where the file
+ * contains a collection of QuoteData instances as JSON string.
  * <p>
  * For some background on the use of RestClient in the implementation, compared to alternatives,
  * see <a href="https://digma.ai/restclient-vs-webclient-vs-resttemplate/">restclient-vs-webclient-vs-resttemplate</a>.
@@ -51,7 +54,11 @@ public class QuoteAdder {
         this.restClient = restClient;
     }
 
-    public Quote addQuote(QuoteData quoteData) throws JsonProcessingException {
+    public List<Quote> addQuotes(List<QuoteData> quoteDataRecords) {
+        return quoteDataRecords.stream().map(this::addQuote).toList();
+    }
+
+    public Quote addQuote(QuoteData quoteData) {
         logger.info(String.format("Trying to add a quote attributed to %s", quoteData.attributedTo()));
 
         ResponseEntity<Quote> responseEntity = restClient.post()
@@ -63,10 +70,14 @@ public class QuoteAdder {
                 .toEntity(Quote.class);
 
         logger.info(String.format("Response status code: %s", responseEntity.getStatusCode()));
-        logger.info(String.format(
-                "Response payload:%n%s",
-                ObjectMappers.getObjectMapper().writer().writeValueAsString(responseEntity.getBody()))
-        );
+        try {
+            logger.info(String.format(
+                    "Response payload:%n%s",
+                    ObjectMappers.getObjectMapper().writer().writeValueAsString(responseEntity.getBody()))
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         return responseEntity.getBody();
     }
@@ -77,13 +88,15 @@ public class QuoteAdder {
         var quoteDataAsJsonString = Files.readString(jsonInputFile);
 
         var objectMapper = ObjectMappers.getObjectMapper();
-        QuoteData quoteData = objectMapper.readValue(quoteDataAsJsonString, QuoteData.class);
+        List<QuoteData> quoteDataRecords =
+                Arrays.stream(objectMapper.readValue(quoteDataAsJsonString, QuoteData[].class)).toList();
 
         var appContext = new AnnotationConfigApplicationContext(ClientConfig.class);
 
         var restClient = appContext.getBean("restClient", RestClient.class);
         var quoteAdder = new QuoteAdder(restClient);
 
-        quoteAdder.addQuote(quoteData);
+        var quotes = quoteAdder.addQuotes(quoteDataRecords);
+        Preconditions.checkArgument(quotes.size() == quoteDataRecords.size());
     }
 }

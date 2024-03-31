@@ -1,5 +1,22 @@
-{
-  "text" : "We'll know our disinformation program is complete when everything the American public believes is false.",
-  "attributedTo" : "William Casey",
-  "subjects" : [ "corrupt government" ]
-}
+[
+  {
+    "text" : "We'll know our disinformation program is complete when everything the American public believes is false.",
+    "attributedTo" : "William Casey",
+    "subjects" : [ "corrupt government" ]
+  },
+  {
+    "text" : "The planet is fine. The people are fucked.",
+    "attributedTo" : "George Carlin",
+    "subjects" : [ "comedy", "brutal honesty" ]
+  },
+  {
+    "text" : "Tell people there's an invisible man in the sky who created the universe, and the vast majority will believe you. Tell them the paint is wet, and they have to touch it to be sure.",
+    "attributedTo" : "George Carlin",
+    "subjects" : [ "comedy", "brutal honesty" ]
+  },
+  {
+    "text" : "When you're born into this world, you're given a ticket to the freak show. If you're born in America you get a front row seat.",
+    "attributedTo" : "George Carlin",
+    "subjects" : [ "comedy", "brutal honesty" ]
+  }
+]
