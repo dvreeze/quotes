@@ -56,7 +56,15 @@ Authoritative documentation on HTTP methods can be found
 in [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
 
 Interesting articles about best practices include
-[Stop Using Autowired](https://www.linkedin.com/pulse/you-should-stop-using-spring-autowired-felix-coutinho).
+[Stop Using Autowired](https://www.linkedin.com/pulse/you-should-stop-using-spring-autowired-felix-coutinho)
+and [Don't use Spring Profile annotation](https://reflectoring.io/dont-use-spring-profile-annotation/).
+Arguably config values should be put outside the application's
+artifact, however, as described
+[here](https://dzone.com/articles/please-stop-using-springs-profiles-per-environment).
+
+The latter is inspired by [12factor config](https://12factor.net/config).
+In general, it is good to be aware of the practices mentioned in
+[The Twelve-Factor App](https://12factor.net/).
 
 ### Running the code
 
