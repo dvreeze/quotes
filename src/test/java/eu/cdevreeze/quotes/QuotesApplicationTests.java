@@ -20,6 +20,7 @@ import eu.cdevreeze.quotes.repository.QuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
 import eu.cdevreeze.quotes.web.rest.QuotesAdminRestController;
 import eu.cdevreeze.quotes.web.rest.QuotesRestController;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,6 +79,8 @@ class QuotesApplicationTests implements ApplicationContextAware {
         assertNotNull(quoteService);
         assertNotNull(quoteRepository);
 
+        var handlerMappingMap = applicationContext.getBeansOfType(HandlerMapping.class);
+        var handlerAdapterMap = applicationContext.getBeansOfType(HandlerAdapter.class);
         var viewResolverBeanMap = applicationContext.getBeansOfType(ViewResolver.class);
         Map<String, HttpMessageConverter<?>> httpMessageConverterBeanMap =
                 applicationContext.getBeansOfType(HttpMessageConverter.class)
@@ -80,6 +88,12 @@ class QuotesApplicationTests implements ApplicationContextAware {
                         .stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, kv -> (HttpMessageConverter<?>) kv.getValue()));
 
+        for (Map.Entry<String, HandlerMapping> kv : handlerMappingMap.entrySet()) {
+            logger.info(String.format("HandlerMapping '%s' of type %s", kv.getKey(), kv.getValue()));
+        }
+        for (Map.Entry<String, HandlerAdapter> kv : handlerAdapterMap.entrySet()) {
+            logger.info(String.format("HandlerAdapter '%s' of type %s", kv.getKey(), kv.getValue()));
+        }
         for (Map.Entry<String, ViewResolver> kv : viewResolverBeanMap.entrySet()) {
             logger.info(String.format("View resolver '%s' of type %s", kv.getKey(), kv.getValue()));
         }
@@ -90,6 +104,17 @@ class QuotesApplicationTests implements ApplicationContextAware {
                             kv.getKey(),
                             kv.getValue()));
         }
+    }
+
+    @Test
+    void requestMappingAnnotationRespected() {
+        Assertions.assertFalse(applicationContext.getBeansOfType(RequestMappingHandlerMapping.class).isEmpty());
+        Assertions.assertFalse(applicationContext.getBeansOfType(RequestMappingHandlerAdapter.class).isEmpty());
+    }
+
+    @Test
+    void preciselyOneDispatcherServlet() {
+        Assertions.assertEquals(1, applicationContext.getBeansOfType(DispatcherServlet.class).size());
     }
 
     @Override
