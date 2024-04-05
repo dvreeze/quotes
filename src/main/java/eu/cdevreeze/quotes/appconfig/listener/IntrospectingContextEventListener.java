@@ -35,6 +35,7 @@ import org.springframework.web.servlet.*;
 import org.springframework.web.servlet.mvc.annotation.ModelAndViewResolver;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -82,6 +83,7 @@ public class IntrospectingContextEventListener {
         showBeanFactoryPostProcessors(appContext);
         showBeanPostProcessors(appContext);
         showApplicationContextAware(appContext);
+        showAllSingletonBeans(appContext);
     }
 
     private void showComponents(ApplicationContext appContext) {
@@ -151,6 +153,19 @@ public class IntrospectingContextEventListener {
         logger.info("------ Showing ApplicationContextAware beans ------");
 
         showSingletonBeansOfType(ApplicationContextAware.class, appContext);
+    }
+
+    private void showAllSingletonBeans(ApplicationContext appContext) {
+        logger.info("------ Showing all Spring beans ------");
+
+        var beans = getSingletonBeansOfType(Object.class, appContext);
+
+        List<Map.Entry<String, Object>> beanMapEntries =
+                beans.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
+
+        for (Map.Entry<String, Object> kv : beanMapEntries) {
+            logger.info(String.format("Bean '%s' of type %s", kv.getKey(), kv.getValue()));
+        }
     }
 
     private <T extends Annotation> void showBeansAnnotatedWith(Class<T> annotationType, ApplicationContext appContext) {
