@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.appconfig;
+package eu.cdevreeze.quotes.serviceconfig;
+
+import eu.cdevreeze.quotes.repository.QuoteRepository;
+import eu.cdevreeze.quotes.service.QuoteService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Marker interface to indicate that this package needs to be scanned for Spring components.
+ * API for wiring of service and repository layer, to enforce complete wiring and consistency between
+ * Configuration objects implementing this interface.
  *
  * @author Chris de Vreeze
  */
-public interface ScanMe {
+@Configuration
+public interface ServiceConfigApi {
+
+    @Bean
+    QuoteRepository quoteRepository();
+
+    @Bean
+    QuoteService quoteService();
 }

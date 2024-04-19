@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.appconfig.listener;
+package eu.cdevreeze.quotes.serviceconfig.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

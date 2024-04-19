@@ -14,46 +14,43 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.appconfig;
+package eu.cdevreeze.quotes.serviceconfig;
 
-import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.quotes.model.Quote;
-import eu.cdevreeze.quotes.model.QuoteData;
-import eu.cdevreeze.quotes.model.SampleData;
+import eu.cdevreeze.quotes.props.JdbcRepositorySelectionProperties;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
-import eu.cdevreeze.quotes.repository.nonpersistent.NonPersistentQuoteRepository;
+import eu.cdevreeze.quotes.repository.jdbc.DelegatingJdbcQuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;
 import eu.cdevreeze.quotes.service.impl.TransactionalQuoteService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 /**
- * Test Spring Configuration for service and repository layer.
+ * Default Spring Configuration for service and repository layer.
  *
  * @author Chris de Vreeze
  */
 @Configuration
-@ConditionalOnProperty(value = "useNonPersistentRepositories", havingValue = "true")
-public class TestServiceConfig implements ServiceConfigApi {
+@ConditionalOnProperty(value = "useNonPersistentRepositories", havingValue = "false", matchIfMissing = true)
+public class DefaultServiceConfig implements ServiceConfigApi {
+
+    private final JdbcRepositorySelectionProperties props;
+    private final DataSource dataSource;
+
+    public DefaultServiceConfig(JdbcRepositorySelectionProperties props, DataSource dataSource) {
+        this.props = props;
+        this.dataSource = dataSource;
+    }
 
     @Bean
     public QuoteRepository quoteRepository() {
-        return new NonPersistentQuoteRepository(getAllQuotes());
+        return new DelegatingJdbcQuoteRepository(props, dataSource);
     }
 
     @Bean
     public QuoteService quoteService() {
         return new TransactionalQuoteService(quoteRepository());
-    }
-
-    private ImmutableMap<Long, Quote> getAllQuotes() {
-        long i = 1L;
-        ImmutableMap.Builder<Long, Quote> quotes = new ImmutableMap.Builder<>();
-        for (QuoteData qt : SampleData.allQuotes) {
-            quotes.put(i, new Quote(i, qt.text(), qt.attributedTo(), qt.subjects()));
-            i += 1;
-        }
-        return quotes.build();
     }
 }
