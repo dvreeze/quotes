@@ -38,7 +38,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * (scanning the web package) will find them, and most annotations in controllers will be interpreted by
  * RequestMappingHandlerMapping and RequestMappingHandlerAdapter beans used by a/the DispatcherServlet.
  * So the wiring for the web layer is a bit implicit, but relatively clear when reasoning from
- * the DispatcherServlet (and its plugged in handler mappings/adapters etc.).
+ * the DispatcherServlet (and its plugged in handler mappings/adapters etc.), given the fact that
+ * the web package is included for component scanning.
  * <p>
  * The wiring for the service (and below that repository) layer in the "serviceconfig" package (visited
  * by component scanning) is more explicit. The beans in this package are Configuration-annotated, so
