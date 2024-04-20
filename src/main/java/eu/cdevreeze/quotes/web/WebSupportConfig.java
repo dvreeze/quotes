@@ -33,6 +33,12 @@ public class WebSupportConfig {
     /**
      * Replacement for the default MappingJackson2HttpMessageConverter.
      * This replacement is aware of Guava immutable collections, and it prettifies JSON output.
+     * <p>
+     * This message converter is (for example) used in RestController-annotated controllers to create
+     * an HTTP response body from Java records (e.g. containing Guava collections). This Configuration-annotated
+     * bean is found by Component scanning, and this specific Bean-annotated bean is wired automatically into a
+     * RequestMappingHandlerAdapter, which is used by the DispatcherServlet (as a HandlerAdapter) to
+     * handle RequestMapping-(meta-)annotated (controller) methods.
      */
     @Bean
     public HttpMessageConverter<Object> httpMessageConverter() {

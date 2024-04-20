@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * This makes it easy to end up with Spring wiring that is hard to understand. In this small application,
  * however, despite the (implicit) use of component scanning, the wiring is easy to understand,
  * because of the following. First of all, the package structure follows "application layering",
- * thus preventing the occurrence of circular package dependencies (inspired by Spring itself).
+ * thus preventing the occurrence of circular package dependencies (inspired by Spring code itself).
  * Secondly, component scanning is done (in a compile-time safe way) for only 2 packages: the web
  * package/layer and a wiring package ("serviceconfig") for the service package/layer.
  * <p>
@@ -53,6 +53,21 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * respectively. Hence, they are meta-annotated with the Component annotation. Yet their packages
  * are excluded from component scanning, so they are only found via Configuration-annotated beans
  * in the "serviceconfig" package.
+ * <p>
+ * The SpringBootApplication annotation is itself annotated not only with the ComponentScan annotation,
+ * but also with the SpringBootConfiguration annotation (and therefore indirectly with the Configuration
+ * and Component annotations). Finally, besides ComponentScan and SpringBootConfiguration, the
+ * SpringBootApplication annotation is itself also annotated with the Spring Boot EnableAutoConfiguration
+ * annotation. That latter annotation seems a rather "mystical" one, guessing from the classpath which
+ * beans to instantiate and configure, but backing away where own configurations are defined.
+ * It is less mystical than it seems. The EnableAutoConfiguration annotation enables beans annotated
+ * with the AutoConfiguration annotation (and therefore indirectly the Configuration annotation). Consider
+ * for example the DataSourceAutoConfiguration bean for autoconfiguration of a JDBC DataSource. This bean
+ * is annotated with the AutoConfiguration annotation, but also with annotations such as ConditionalOnClass.
+ * Looking at many of those AutoConfiguration-annotated beans this autoconfiguration system makes a lot
+ * of sense for providing defaults for much of the wiring (for non-application classes), but it does
+ * depend a lot on the classpath, so discipline is needed to keep the classpath (and therefore POM file)
+ * clean.
  *
  * @author Chris de Vreeze
  */

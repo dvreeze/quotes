@@ -31,6 +31,11 @@ import java.util.Random;
 
 /**
  * Quotes web REST controller.
+ * <p>
+ * Note that the RestController annotation is itself annotated with the Controller and ResponseBody
+ * annotations. Hence, it is (indirectly) meta-annotated with the Component annotation (so it is a
+ * candidate for component scanning). The ResponseBody annotation binds controller method return values
+ * directly to the HTTP response payload, instead of a model and view.
  *
  * @author Chris de Vreeze
  */
