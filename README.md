@@ -41,6 +41,11 @@ and Spring Boot. With this foundation, a practical guide
 about custom Spring Boot Auto-Configuration can be found
 [here](https://www.baeldung.com/spring-boot-custom-auto-configuration).
 
+Note that the idea of Dependency Injection (Spring-based or not)
+goes well together with the
+[SOLID principles](https://www.freecodecamp.org/news/solid-principles-for-better-software-design/),
+in particular (but not only) the Dependency Inversion Principle.
+
 Documentation I consulted also includes the links in
 [HELP.md](https://github.com/dvreeze/quotes/blob/master/HELP.md),
 as well as [getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started)
