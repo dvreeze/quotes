@@ -68,6 +68,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * of sense for providing defaults for much of the wiring (for non-application classes), but it does
  * depend a lot on the classpath, so discipline is needed to keep the classpath (and therefore POM file)
  * clean.
+ * <p>
+ * Spring Boot AutoConfiguration is explained very well in
+ * <a href="https://www.marcobehler.com/guides/spring-boot-autoconfiguration">Spring Boot AutoConfiguration</a>.
  *
  * @author Chris de Vreeze
  */
