@@ -30,7 +30,18 @@ repositories.
 
 ### Relevant documentation
 
-Documentation I consulted includes the links in
+First I would like to refer to great explanations of
+what Spring Framework and Spring Boot are fundamentally about:
+* [Spring Framework by Marco Behler](https://www.marcobehler.com/guides/spring-framework)
+* [Spring Boot by Marco Behler](https://www.marcobehler.com/guides/spring-boot-autoconfiguration)
+
+I think these 2 guides really get me on the right track
+for really learning and understanding Spring Framework
+and Spring Boot. With this foundation, a practical guide
+about custom Spring Boot Auto-Configuration can be found
+[here](https://www.baeldung.com/spring-boot-custom-auto-configuration).
+
+Documentation I consulted also includes the links in
 [HELP.md](https://github.com/dvreeze/quotes/blob/master/HELP.md),
 as well as [getting started with Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started)
 and [using Spring Boot](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html).
@@ -55,7 +66,7 @@ should be read first (at least the basics).
 Authoritative documentation on HTTP methods can be found
 in [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods).
 
-Interesting articles about best practices include
+Interesting but opinionated articles about best practices include
 [Stop Using Autowired](https://www.linkedin.com/pulse/you-should-stop-using-spring-autowired-felix-coutinho)
 and [Don't use Spring Profile annotation](https://reflectoring.io/dont-use-spring-profile-annotation/).
 Arguably config values should be put outside the application's
