@@ -57,6 +57,7 @@ public class QuotesController {
 
         modelAndView.addObject("quotes", quotes);
         modelAndView.addObject("quoteFilters", quoteFilters);
+        modelAndView.setViewName("quotes");
         return modelAndView;
     }
 }
