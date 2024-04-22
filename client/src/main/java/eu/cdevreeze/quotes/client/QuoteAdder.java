@@ -18,9 +18,9 @@ package eu.cdevreeze.quotes.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Preconditions;
-import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
-import eu.cdevreeze.quotes.model.Quote;
-import eu.cdevreeze.quotes.model.QuoteData;
+import eu.cdevreeze.quotes.client.internal.utils.ObjectMappers;
+import eu.cdevreeze.quotes.client.model.Quote;
+import eu.cdevreeze.quotes.client.model.QuoteData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

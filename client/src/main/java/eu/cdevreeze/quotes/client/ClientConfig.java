@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.quotes.client;
 
-import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
+import eu.cdevreeze.quotes.client.internal.utils.ObjectMappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
