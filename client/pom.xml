@@ -52,6 +52,12 @@
 				<spring.boot.mainclass>eu.cdevreeze.quotes.client.QuoteDeleter</spring.boot.mainclass>
 			</properties>
 		</profile>
+		<profile>
+			<id>find</id>
+			<properties>
+				<spring.boot.mainclass>eu.cdevreeze.quotes.client.QuoteFinder</spring.boot.mainclass>
+			</properties>
+		</profile>
 	</profiles>
 
 	<build>

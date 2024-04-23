@@ -16,6 +16,10 @@
 
 package eu.cdevreeze.quotes.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.quotes.client.model.Quote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -23,12 +27,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
-import java.util.Objects;
-
 /**
- * Client program to delete a quote via the HTTP API.
+ * Client program to find all quotes via the HTTP API.
+ * <p>
+ * Run with:
+ * <pre>
+ * cd client
+ * ../mvnw spring-boot:run -Pfind
+ * cd ..
+ * </pre>
  * <p>
  * For some background on the use of RestClient in the implementation, compared to alternatives,
  * see <a href="https://digma.ai/restclient-vs-webclient-vs-resttemplate/">restclient-vs-webclient-vs-resttemplate</a>.
@@ -38,34 +50,41 @@ import java.util.Objects;
 @SpringBootConfiguration
 @EnableAutoConfiguration
 @Import(ClientConfig.class)
-public class QuoteDeleter implements CommandLineRunner {
+public class QuoteFinder implements CommandLineRunner {
 
-    private final Logger logger = LoggerFactory.getLogger(QuoteDeleter.class);
+    private final Logger logger = LoggerFactory.getLogger(QuoteAdder.class);
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
-    public QuoteDeleter(RestClient restClient) {
+    public QuoteFinder(RestClient restClient, ObjectMapper objectMapper) {
         this.restClient = restClient;
+        this.objectMapper = objectMapper;
     }
 
-    public void deleteQuote(long quoteId) {
-        logger.info(String.format("Trying to delete quote with ID %d", quoteId));
-        var statusCode = restClient.delete().uri(String.format("/quotes/%d", quoteId))
+    public ImmutableList<Quote> findAllQuotes() {
+        logger.info("Trying to retrieve all quotes");
+
+        ResponseEntity<ImmutableList<Quote>> responseEntity = restClient.get()
+                .uri("/quotes.json")
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .toBodilessEntity()
-                .getStatusCode();
-        logger.info(String.format("Response status code: %s", statusCode));
+                .toEntity(new ParameterizedTypeReference<>() {
+                });
+
+        logger.info(String.format("Response status code: %s", responseEntity.getStatusCode()));
+
+        return responseEntity.getBody();
     }
 
     @Override
-    public void run(String... args) {
-        Objects.checkIndex(0, args.length);
-        var quoteId = Long.parseLong(args[0]);
+    public void run(String... args) throws JsonProcessingException {
+        var quotes = findAllQuotes();
 
-        deleteQuote(quoteId);
+        System.out.printf("%s%n", objectMapper.writer().writeValueAsString(quotes));
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(QuoteDeleter.class, args);
+        SpringApplication.run(QuoteFinder.class, args);
     }
 }

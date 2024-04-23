@@ -16,9 +16,15 @@
 
 package eu.cdevreeze.quotes.client;
 
-import eu.cdevreeze.quotes.client.internal.utils.ObjectMappers;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
@@ -27,39 +33,38 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.util.List;
 
 /**
- * Non-idiomatic Spring Configuration for system properties "scheme", "hostName" and "port".
- * Make sure this configuration will never be scanned by the server-side Spring wiring.
+ * Non-idiomatic Spring Configuration for system properties "scheme", "hostName" and "port",
+ * and beans for HttpMessageConverter, Jackson ObjectMapper and RestClient.
  *
  * @author Chris de Vreeze
  */
 @Configuration
 public class ClientConfig {
 
-    private final String prefix = "restclient" + ".";
-
     @Bean
-    public String scheme() {
-        return System.getProperty(prefix + "scheme", "http");
+    public ObjectMapper objectMapper() {
+        return JsonMapper.builder()
+                .addModule(new Jdk8Module())
+                .addModule(new GuavaModule())
+                .build()
+                .enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     @Bean
-    public String hostName() {
-        return System.getProperty(prefix + "hostName", "localhost");
+    public HttpMessageConverter<?> httpMessageConverter() {
+        return new MappingJackson2HttpMessageConverter(objectMapper());
     }
 
     @Bean
-    public int port() {
-        return Integer.parseInt(System.getProperty(prefix + "port", "8081"));
-    }
-
-    @Bean
-    public RestClient restClient() {
+    public RestClient restClient(
+            @Value("${restclient.scheme}") String scheme,
+            @Value("${restclient.host}") String host,
+            @Value("${restclient.port}") int port
+    ) {
         var baseUrl = new DefaultUriBuilderFactory().builder()
-                .scheme(scheme()).host(hostName()).port(port()).toUriString();
+                .scheme(scheme).host(host).port(port).toUriString();
 
-        var httpMessageConverter = new MappingJackson2HttpMessageConverter(ObjectMappers.getObjectMapper());
-
-        var restTemplate = new RestTemplate(List.of(httpMessageConverter));
+        var restTemplate = new RestTemplate(List.of(httpMessageConverter()));
 
         return RestClient.builder(restTemplate).baseUrl(baseUrl).build();
     }

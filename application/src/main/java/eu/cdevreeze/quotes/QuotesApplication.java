@@ -24,6 +24,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 /**
  * Quotes application main program.
  * <p>
+ * The web application can be run with:
+ * <pre>java -jar application/target/quotes-0.0.1-SNAPSHOT.jar</pre>
+ * This only works after the build has performed a "mvnw spring-boot:repackage" command.
+ * <p>
  * The application wiring has been done in a disciplined way. First note that the Spring Boot
  * SpringBootApplication annotation is itself annotated with the Spring ComponentScan annotation.
  * This makes it easy to end up with Spring wiring that is hard to understand. In this small application,

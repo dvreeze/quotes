@@ -17,13 +17,17 @@
 package eu.cdevreeze.quotes.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import eu.cdevreeze.quotes.client.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.client.model.Quote;
 import eu.cdevreeze.quotes.client.model.QuoteData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
@@ -44,14 +48,19 @@ import java.util.Objects;
  *
  * @author Chris de Vreeze
  */
-public class QuoteAdder {
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@Import(ClientConfig.class)
+public class QuoteAdder implements CommandLineRunner {
 
     private final Logger logger = LoggerFactory.getLogger(QuoteAdder.class);
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
-    public QuoteAdder(RestClient restClient) {
+    public QuoteAdder(RestClient restClient, ObjectMapper objectMapper) {
         this.restClient = restClient;
+        this.objectMapper = objectMapper;
     }
 
     public List<Quote> addQuotes(List<QuoteData> quoteDataRecords) {
@@ -73,7 +82,7 @@ public class QuoteAdder {
         try {
             logger.info(String.format(
                     "Response payload:%n%s",
-                    ObjectMappers.getObjectMapper().writer().writeValueAsString(responseEntity.getBody()))
+                    objectMapper.writer().writeValueAsString(responseEntity.getBody()))
             );
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -82,21 +91,20 @@ public class QuoteAdder {
         return responseEntity.getBody();
     }
 
-    public static void main(String[] args) throws IOException {
+    @Override
+    public void run(String... args) throws IOException {
         Objects.checkIndex(0, args.length);
         var jsonInputFile = Path.of(args[0]);
         var quoteDataAsJsonString = Files.readString(jsonInputFile);
 
-        var objectMapper = ObjectMappers.getObjectMapper();
         List<QuoteData> quoteDataRecords =
                 Arrays.stream(objectMapper.readValue(quoteDataAsJsonString, QuoteData[].class)).toList();
 
-        var appContext = new AnnotationConfigApplicationContext(ClientConfig.class);
-
-        var restClient = appContext.getBean("restClient", RestClient.class);
-        var quoteAdder = new QuoteAdder(restClient);
-
-        var quotes = quoteAdder.addQuotes(quoteDataRecords);
+        var quotes = addQuotes(quoteDataRecords);
         Preconditions.checkArgument(quotes.size() == quoteDataRecords.size());
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(QuoteAdder.class, args);
     }
 }
