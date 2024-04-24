@@ -23,6 +23,7 @@ import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -39,6 +40,7 @@ import java.util.Objects;
  * @author Chris de Vreeze
  */
 @Repository
+@ConditionalOnProperty(value = "implementation.jdbcRepository", havingValue = "JdbcQuoteRepositoryUsingOnlyJson")
 public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
 
     private final JdbcClient jdbcClient;

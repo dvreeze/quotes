@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.props;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package eu.cdevreeze.quotes.repository;
 
 /**
- * Configuration property for the selection of (JDBC) QuoteRepository implementation.
- * <p>
- * See for example <a href="https://www.baeldung.com/configuration-properties-in-spring-boot">configuration properties in Spring Boot</a>.
+ * Marker interface to indicate that this package needs to be scanned for Spring components.
  *
  * @author Chris de Vreeze
  */
-@ConfigurationProperties(prefix = "implementation")
-public record JdbcRepositorySelectionProperties(String jdbcRepository) {
+public interface ScanMe {
 }

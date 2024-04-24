@@ -21,7 +21,10 @@ import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.quotes.internal.utils.MapBasedRepositories;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
+import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,12 +34,18 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Chris de Vreeze
  */
+@Repository
+@ConditionalOnProperty(value = "implementation.jdbcRepository", havingValue = "nojdbc")
 public class NonPersistentQuoteRepository implements QuoteRepository {
 
     private final AtomicReference<ImmutableMap<Long, Quote>> quoteDatabase;
 
     public NonPersistentQuoteRepository(ImmutableMap<Long, Quote> initialQuoteDatabaseContent) {
         this.quoteDatabase = new AtomicReference<>(initialQuoteDatabaseContent);
+    }
+
+    public NonPersistentQuoteRepository() {
+        this(getAllQuotes());
     }
 
     public void reset(ImmutableMap<Long, Quote> initialQuoteDatabaseContent) {
@@ -74,5 +83,15 @@ public class NonPersistentQuoteRepository implements QuoteRepository {
     @Override
     public void deleteQuote(long quoteId) {
         MapBasedRepositories.deleteRow(quoteId, quoteDatabase);
+    }
+
+    private static ImmutableMap<Long, Quote> getAllQuotes() {
+        long i = 1L;
+        ImmutableMap.Builder<Long, Quote> quotes = new ImmutableMap.Builder<>();
+        for (QuoteData qt : SampleData.allQuotes) {
+            quotes.put(i, new Quote(i, qt.text(), qt.attributedTo(), qt.subjects()));
+            i += 1;
+        }
+        return quotes.build();
     }
 }

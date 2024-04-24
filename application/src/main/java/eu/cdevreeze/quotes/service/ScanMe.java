@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.serviceconfig;
+package eu.cdevreeze.quotes.service;
 
 /**
  * Marker interface to indicate that this package needs to be scanned for Spring components.

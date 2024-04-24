@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.serviceconfig.listener;
+package eu.cdevreeze.quotes.springeventlistener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
