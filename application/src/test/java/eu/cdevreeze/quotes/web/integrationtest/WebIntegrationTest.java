@@ -156,7 +156,7 @@ class WebIntegrationTest {
         Matcher<? super String> anyAttributedToMatcher = Matchers.anyOf(attributedToMatchers);
 
         List<Matcher<? super String>> subjectMatchers = SampleData.allQuotes.stream()
-                .map(qt -> (Matcher<? super String>) Matchers.equalTo(qt.subjects().get(0))).collect(Collectors.toList());
+                .map(qt -> (Matcher<? super String>) Matchers.equalTo(qt.subjects().getFirst())).collect(Collectors.toList());
         Matcher<? super String> anySubjectMatcher = Matchers.anyOf(subjectMatchers);
 
         this.mockMvc.perform(get("/randomQuote.json")).andDo(print())
