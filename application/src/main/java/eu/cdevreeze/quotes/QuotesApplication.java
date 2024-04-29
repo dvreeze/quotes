@@ -16,6 +16,10 @@
 
 package eu.cdevreeze.quotes;
 
+import eu.cdevreeze.quotes.repository.ScanRepositoryLayer;
+import eu.cdevreeze.quotes.service.ScanServiceLayer;
+import eu.cdevreeze.quotes.springeventlistener.ScanSpringEventListeners;
+import eu.cdevreeze.quotes.web.ScanWebLayer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -71,10 +75,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Chris de Vreeze
  */
 @SpringBootApplication(scanBasePackageClasses = {
-        eu.cdevreeze.quotes.web.ScanMe.class,
-        eu.cdevreeze.quotes.service.ScanMe.class,
-        eu.cdevreeze.quotes.repository.ScanMe.class,
-        eu.cdevreeze.quotes.springeventlistener.ScanMe.class
+        ScanWebLayer.class,
+        ScanServiceLayer.class,
+        ScanRepositoryLayer.class,
+        ScanSpringEventListeners.class
 })
 public class QuotesApplication {
 

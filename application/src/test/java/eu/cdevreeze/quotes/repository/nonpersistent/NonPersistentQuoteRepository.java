@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Chris de Vreeze
  */
 @Repository
-@ConditionalOnProperty(value = "implementation.jdbcRepository", havingValue = "nojdbc")
+@ConditionalOnProperty(value = "implementation.useJdbc", havingValue = "false")
 public class NonPersistentQuoteRepository implements QuoteRepository {
 
     private final AtomicReference<ImmutableMap<Long, Quote>> quoteDatabase;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.service;
+package eu.cdevreeze.quotes.web;
 
 /**
  * Marker interface to indicate that this package needs to be scanned for Spring components.
  *
  * @author Chris de Vreeze
  */
-public interface ScanMe {
+public interface ScanWebLayer {
 }

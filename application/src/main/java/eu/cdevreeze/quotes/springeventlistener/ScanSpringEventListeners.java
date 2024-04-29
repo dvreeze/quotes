@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.repository;
+package eu.cdevreeze.quotes.springeventlistener;
 
 /**
  * Marker interface to indicate that this package needs to be scanned for Spring components.
  *
  * @author Chris de Vreeze
  */
-public interface ScanMe {
+public interface ScanSpringEventListeners {
 }
