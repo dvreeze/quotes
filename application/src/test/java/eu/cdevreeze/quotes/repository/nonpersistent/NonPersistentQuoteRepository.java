@@ -23,6 +23,7 @@ import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.model.SampleData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Chris de Vreeze
  */
 @Repository
+@ConditionalOnClass(NonPersistentQuoteRepository.class)
 @ConditionalOnProperty(value = "implementation.useJdbc", havingValue = "false")
 public class NonPersistentQuoteRepository implements QuoteRepository {
 
