@@ -27,8 +27,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,8 +51,8 @@ public class JdbcQuoteRepository implements QuoteRepository {
 
     @Override
     public ImmutableList<Quote> findAllQuotes() {
-        var stmt = jdbcClient.sql(findQuotesBaseSql);
-        return findQuotes(stmt);
+        List<QuoteSubjectRow> rows = jdbcClient.sql(findQuotesBaseSql).query(QuoteSubjectRow.class).list();
+        return extractQuotes(rows);
     }
 
     @Override
@@ -61,8 +60,12 @@ public class JdbcQuoteRepository implements QuoteRepository {
         String sql = String.format("%s%n", findQuotesBaseSql) + """
                 where sub.subject = :subject""";
 
-        var stmt = jdbcClient.sql(sql).param("subject", subject);
-        return findQuotes(stmt);
+        List<QuoteSubjectRow> rows = jdbcClient
+                .sql(sql)
+                .param("subject", subject)
+                .query(QuoteSubjectRow.class)
+                .list();
+        return extractQuotes(rows);
     }
 
     @Override
@@ -70,8 +73,12 @@ public class JdbcQuoteRepository implements QuoteRepository {
         String sql = String.format("%s%n", findQuotesBaseSql) + """
                 where qt.attributedTo = :attributedTo""";
 
-        var stmt = jdbcClient.sql(sql).param("attributedTo", attributedTo);
-        return findQuotes(stmt);
+        List<QuoteSubjectRow> rows = jdbcClient
+                .sql(sql)
+                .param("attributedTo", attributedTo)
+                .query(QuoteSubjectRow.class)
+                .list();
+        return extractQuotes(rows);
     }
 
     @Override
@@ -89,12 +96,8 @@ public class JdbcQuoteRepository implements QuoteRepository {
         deleteQuoteWithoutSubjects(quoteId);
     }
 
-    // Nice reuse across select queries
-    // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
-    private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
-        return stmt
-                .query(this::mapRow)
-                .list()
+    private ImmutableList<Quote> extractQuotes(List<QuoteSubjectRow> rows) {
+        return rows
                 .stream()
                 .collect(Collectors.groupingBy(QuoteSubjectRow::id))
                 .values()
@@ -105,24 +108,13 @@ public class JdbcQuoteRepository implements QuoteRepository {
                                     first.id(),
                                     first.text(),
                                     first.attributedTo(),
-                                    grp.stream().flatMap(row -> row.subjectOption().stream()).collect(ImmutableList.toImmutableList())
+                                    grp.stream()
+                                            .flatMap(row -> row.subject().stream())
+                                            .collect(ImmutableList.toImmutableList())
                             );
                         }
                 )
                 .collect(ImmutableList.toImmutableList());
-    }
-
-    private QuoteSubjectRow mapRow(ResultSet rs, int rowNum) {
-        try {
-            return new QuoteSubjectRow(
-                    rs.getLong("id"),
-                    rs.getString("text"),
-                    rs.getString("attributedTo"),
-                    Optional.ofNullable(rs.getString("subject"))
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private long addQuoteWithoutSubjects(QuoteData quote) {
@@ -161,6 +153,6 @@ public class JdbcQuoteRepository implements QuoteRepository {
               from quote qt
               left join quote_subject subj on qt.id = subj.quote_id""";
 
-    record QuoteSubjectRow(long id, String text, String attributedTo, Optional<String> subjectOption) {
+    record QuoteSubjectRow(long id, String text, String attributedTo, Optional<String> subject) {
     }
 }

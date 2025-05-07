@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -59,8 +60,8 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
                   from quote qt
                   left join quote_subject subj on qt.id = subj.quote_id
                  group by qt.id""";
-        var stmt = jdbcClient.sql(sql);
-        return findQuotes(stmt);
+        List<Quote> rows = jdbcClient.sql(sql).query(this::mapRow).list();
+        return rows.stream().collect(ImmutableList.toImmutableList());
     }
 
     @Override
@@ -90,16 +91,6 @@ public class JdbcQuoteRepositoryUsingJson implements QuoteRepository {
     public void deleteQuote(long quoteId) {
         deleteQuoteSubjects(quoteId);
         deleteQuoteWithoutSubjects(quoteId);
-    }
-
-    // Nice reuse across select queries
-    // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
-    private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
-        return stmt
-                .query(this::mapRow)
-                .list()
-                .stream()
-                .collect(ImmutableList.toImmutableList());
     }
 
     private Quote mapRow(ResultSet rs, int rowNum) {

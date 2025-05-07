@@ -32,6 +32,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -62,8 +63,11 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
                   from quote qt
                   left join quote_subject subj on qt.id = subj.quote_id
                  group by qt.id""";
-        var stmt = jdbcClient.sql(sql);
-        return findQuotes(stmt);
+        var objectMapper = ObjectMappers.getObjectMapper(false);
+        List<Quote> rows = jdbcClient.sql(sql)
+                .query((ResultSet rs, int rowNum) -> mapRow(rs, objectMapper))
+                .list();
+        return rows.stream().collect(ImmutableList.toImmutableList());
     }
 
     @Override
@@ -93,17 +97,6 @@ public class JdbcQuoteRepositoryUsingOnlyJson implements QuoteRepository {
     public void deleteQuote(long quoteId) {
         deleteQuoteSubjects(quoteId);
         deleteQuoteWithoutSubjects(quoteId);
-    }
-
-    // Nice reuse across select queries
-    // Note the "stream" call only on a retrieved collection, to prevent having to close the stream
-    private ImmutableList<Quote> findQuotes(JdbcClient.StatementSpec stmt) {
-        var objectMapper = ObjectMappers.getObjectMapper(false);
-        return stmt
-                .query((ResultSet rs, int rowNum) -> mapRow(rs, objectMapper))
-                .list()
-                .stream()
-                .collect(ImmutableList.toImmutableList());
     }
 
     private Quote mapRow(ResultSet rs, ObjectMapper objectMapper) {
