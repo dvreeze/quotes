@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -38,8 +38,9 @@ import java.util.stream.Collectors;
  * @author Chris de Vreeze
  */
 @Repository
-@ConditionalOnExpression(
-        "${implementation.useJdbc:true} and '${implementation.jdbcQuoteRepository}'.equalsIgnoreCase('JdbcQuoteRepository')"
+@ConditionalOnProperty(
+        name = "implementation.jdbcQuoteRepository",
+        havingValue = "JdbcQuoteRepository"
 )
 public class JdbcQuoteRepository implements QuoteRepository {
 

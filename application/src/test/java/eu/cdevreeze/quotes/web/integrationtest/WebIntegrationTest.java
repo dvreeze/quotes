@@ -31,6 +31,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -58,17 +61,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WebIntegrationTest {
 
+    @TestConfiguration
+    public static class TestConfig {
+
+        // Overriding the JDBC QuoteRepository
+
+        @Bean
+        @Primary
+        public QuoteRepository testQuoteRepository() {
+            return new NonPersistentQuoteRepository();
+        }
+    }
+
     private final MockMvc mockMvc;
-    private final QuoteService quoteService;
     private final QuoteRepository quoteRepository;
+    private final QuoteService quoteService;
 
     private ImmutableMap<Long, Quote> initialDatabaseContent = ImmutableMap.of();
 
     @Autowired
-    public WebIntegrationTest(MockMvc mockMvc, QuoteService quoteService, QuoteRepository quoteRepository) {
+    public WebIntegrationTest(MockMvc mockMvc, QuoteRepository quoteRepository, QuoteService quoteService) {
         this.mockMvc = mockMvc;
-        this.quoteService = quoteService;
         this.quoteRepository = quoteRepository;
+        this.quoteService = quoteService;
     }
 
     @BeforeAll
