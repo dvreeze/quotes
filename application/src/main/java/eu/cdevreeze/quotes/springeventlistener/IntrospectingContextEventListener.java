@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,7 @@ import java.util.Objects;
  * @author Chris de Vreeze
  */
 @Component
+@ConditionalOnProperty(name = "introspect", havingValue = "true")
 public class IntrospectingContextEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(IntrospectingContextEventListener.class);
@@ -164,7 +166,7 @@ public class IntrospectingContextEventListener {
                 beans.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
 
         for (Map.Entry<String, Object> kv : beanMapEntries) {
-            logger.info(String.format("Bean '%s' of type %s", kv.getKey(), kv.getValue()));
+            logger.info(String.format("Bean '%s' of type %s", kv.getKey(), kv.getValue().getClass().getCanonicalName()));
         }
     }
 
@@ -176,7 +178,7 @@ public class IntrospectingContextEventListener {
                     "%s bean '%s' of bean type %s",
                     annotationType.getSimpleName(),
                     kv.getKey(),
-                    kv.getValue()));
+                    kv.getValue().getClass().getCanonicalName()));
         }
     }
 
@@ -184,7 +186,7 @@ public class IntrospectingContextEventListener {
         var beans = getSingletonBeansOfType(tpe, appContext);
 
         for (Map.Entry<String, T> kv : beans.entrySet()) {
-            logger.info(String.format("%s bean '%s' of type %s", tpe.getSimpleName(), kv.getKey(), kv.getValue()));
+            logger.info(String.format("%s bean '%s' of type %s", tpe.getSimpleName(), kv.getKey(), kv.getValue().getClass().getCanonicalName()));
         }
     }
 
