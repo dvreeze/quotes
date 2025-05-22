@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.quotes.model;
+package eu.cdevreeze.quotes.sampledata;
 
 import com.google.common.collect.ImmutableList;
+import eu.cdevreeze.quotes.model.QuoteData;
 
 /**
  * Sample data, which can be used in unit tests to initialize a NonPersistentQuoteRepository.

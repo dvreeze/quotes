@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import eu.cdevreeze.quotes.internal.utils.ObjectMappers;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
-import eu.cdevreeze.quotes.model.SampleData;
+import eu.cdevreeze.quotes.sampledata.SampleData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
 import eu.cdevreeze.quotes.repository.nonpersistent.NonPersistentQuoteRepository;
 import eu.cdevreeze.quotes.service.QuoteService;

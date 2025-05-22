@@ -16,7 +16,7 @@
 
 package eu.cdevreeze.quotes.web.rest;
 
-import eu.cdevreeze.quotes.model.SampleData;
+import eu.cdevreeze.quotes.sampledata.SampleData;
 import eu.cdevreeze.quotes.service.QuoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
