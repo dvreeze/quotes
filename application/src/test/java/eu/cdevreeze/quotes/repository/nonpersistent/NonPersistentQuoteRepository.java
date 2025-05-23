@@ -18,12 +18,14 @@ package eu.cdevreeze.quotes.repository.nonpersistent;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import eu.cdevreeze.quotes.internal.utils.MapBasedRepositories;
 import eu.cdevreeze.quotes.model.Quote;
 import eu.cdevreeze.quotes.model.QuoteData;
-import eu.cdevreeze.quotes.sampledata.SampleData;
 import eu.cdevreeze.quotes.repository.QuoteRepository;
+import eu.cdevreeze.quotes.sampledata.SampleData;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -68,17 +70,27 @@ public class NonPersistentQuoteRepository implements QuoteRepository {
     }
 
     @Override
-    public Quote addQuote(QuoteData quote) {
-        var updatedDbContent = MapBasedRepositories.addRowToTableGeneratingKey(
-                id -> new Quote(id, quote.text(), quote.attributedTo(), quote.subjects()),
-                quoteDatabase
-        );
-        return MapBasedRepositories.findLastRow(updatedDbContent).orElseThrow();
+    public Quote addQuote(QuoteData quoteData) {
+        AtomicReference<Quote> quoteRef = new AtomicReference<>();
+        quoteDatabase.updateAndGet(db -> {
+            long nextId = 1L + db.keySet().stream().max(Comparator.naturalOrder()).orElse(0L);
+            Quote quote = new Quote(nextId, quoteData.text(), quoteData.attributedTo(), quoteData.subjects());
+            quoteRef.set(quote);
+            Map<Long, Quote> tempDb = new HashMap<>(db);
+            tempDb.put(nextId, quote);
+            return ImmutableMap.copyOf(tempDb);
+        });
+        return quoteRef.get();
     }
 
     @Override
     public void deleteQuote(long quoteId) {
-        MapBasedRepositories.deleteRow(quoteId, quoteDatabase);
+        quoteDatabase.updateAndGet(db ->
+                db.entrySet()
+                        .stream()
+                        .filter(kv -> kv.getKey() != quoteId)
+                        .collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
     }
 
     private static ImmutableMap<Long, Quote> getAllQuotes() {
